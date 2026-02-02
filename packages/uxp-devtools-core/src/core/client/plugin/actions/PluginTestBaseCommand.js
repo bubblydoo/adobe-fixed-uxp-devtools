@@ -17,8 +17,8 @@
 import { spawn } from 'node:child_process';
 import { createRequire } from 'node:module';
 import path from 'node:path';
-import fs from 'fs-extra';
-import _ from 'lodash';
+import fs from 'node:fs';
+import { intersection } from 'lodash-es';
 
 import PluginBaseCommand from './PluginBaseCommand.js';
 
@@ -106,12 +106,12 @@ class PluginTestBaseCommand extends PluginBaseCommand {
         'nightwatch.conf.js',
       ];
       const fileNames = fs.readdirSync(destTestDir);
-      const conflictingNames = _.intersection(fileNames, unsafeFiles);
+      const conflictingNames = intersection(fileNames, unsafeFiles);
       if (conflictingNames.length) {
         throw new Error(`Conflicting files ${conflictingNames} exists at ${destTestDir}`);
       }
     }
-    fs.copySync(origTestDir, destTestDir);
+    fs.cpSync(origTestDir, destTestDir, { recursive: true });
     return Promise.resolve(true);
   }
 

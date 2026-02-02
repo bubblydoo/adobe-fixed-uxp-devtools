@@ -13,7 +13,7 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
-import _ from 'lodash';
+import { merge } from 'lodash-es';
 import prompts from 'prompts';
 import semver from 'semver';
 import questions from './BasicInitQuestions.js';
@@ -116,7 +116,7 @@ class PluginInitBasic {
         return Promise.reject(result.error);
       }
       this._ensureMasterJson();
-      this._data = _.merge(this._manifestJson, userInput);
+      this._data = merge(this._manifestJson, userInput);
       this._saveManifest(this._data);
       return Promise.resolve(true);
     });

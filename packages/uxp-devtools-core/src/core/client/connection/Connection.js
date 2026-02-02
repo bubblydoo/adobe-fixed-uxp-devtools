@@ -12,7 +12,7 @@
  */
 
 import EventEmitter from 'node:events';
-import WebSocket from 'isomorphic-ws';
+import WebSocket from 'ws';
 
 class Connection extends EventEmitter {
   connect(cliController, url) {

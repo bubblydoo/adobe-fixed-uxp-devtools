@@ -4,25 +4,25 @@ overview: Identify and clean up dependencies that are unused or can be replaced 
 todos:
   - id: remove-unused
     content: "Remove unused dependencies: babel-polyfill, babel-register, app-path, fancy-log"
-    status: pending
+    status: completed
   - id: replace-fs-extra
     content: Replace fs-extra with native fs in 7 files
-    status: pending
+    status: completed
   - id: replace-shell-exec
     content: Replace shell-exec with child_process in KillProcess.js
-    status: pending
+    status: completed
   - id: replace-isomorphic-ws
     content: Replace isomorphic-ws with ws in Connection.js
-    status: pending
+    status: completed
   - id: replace-lodash
     content: Replace lodash with lodash-es in 10 files
-    status: pending
+    status: completed
   - id: upgrade-deps
     content: "Upgrade dependencies: yargs, chokidar, express, ws, archiver, chalk"
-    status: pending
+    status: completed
   - id: update-engine
     content: Update engines.node to >=20.0.0 in package.json
-    status: pending
+    status: completed
 isProject: false
 ---
 

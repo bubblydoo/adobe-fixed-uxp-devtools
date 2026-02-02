@@ -9,10 +9,10 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
-import fs from 'fs-extra';
 import tar from 'tar';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -29,9 +29,9 @@ function setupTargetFolder() {
   const destDir = path.resolve(__dirname, '../build/');
   // clean-up the old build artifacts.
   if (fs.existsSync(destDir)) {
-    fs.removeSync(destDir);
+    fs.rmSync(destDir, { recursive: true, force: true });
   }
-  fs.ensureDirSync(destDir);
+  fs.mkdirSync(destDir, { recursive: true });
   return destDir;
 }
 

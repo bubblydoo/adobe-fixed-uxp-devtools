@@ -10,7 +10,7 @@ governing permissions and limitations under the License.
 */
 
 import chokidar from 'chokidar';
-import _ from 'lodash';
+import { debounce } from 'lodash-es';
 import { createDeferredPromise } from '../helpers/CommonUtils.js';
 
 class Watcher {
@@ -72,7 +72,7 @@ class PathCaretaker {
         - time interval < 'wait', squash them into one event(begining)
             with max series time-length of 'maxWait'=1500ms
     */
-    const debouncedCallback = _.debounce(watchCallback, 200, {
+    const debouncedCallback = debounce(watchCallback, 200, {
       leading: true,
       trailing: false,
       maxWait: 1500,

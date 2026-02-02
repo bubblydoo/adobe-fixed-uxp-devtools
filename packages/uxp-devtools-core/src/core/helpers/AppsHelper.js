@@ -11,7 +11,7 @@
  *
  */
 
-import _ from 'lodash';
+import { filter, find } from 'lodash-es';
 import DevToolsError from '../common/DevToolsError.js';
 
 class AppEndPoint {
@@ -49,8 +49,8 @@ class AppEndPoint {
 
 class AppsHelper {
   static filterApplicableAppsFromList(appsFullList, pluginApplicableApps) {
-    const applicableApps = _.filter(appsFullList, (cep) => {
-      const obj = _.find(pluginApplicableApps, pae => AppEndPoint.isSame(pae, cep));
+    const applicableApps = filter(appsFullList, (cep) => {
+      const obj = find(pluginApplicableApps, pae => AppEndPoint.isSame(pae, cep));
       return !!obj;
     });
 

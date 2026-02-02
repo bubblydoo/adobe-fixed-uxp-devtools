@@ -10,7 +10,7 @@
  *  governing permissions and limitations under the License.
  *
  */
-import _ from 'lodash';
+import { find, isEqual } from 'lodash-es';
 import UxpRcMgr from '../../common/UxpRCMgr.js';
 
 class PluginSession {
@@ -44,8 +44,8 @@ class PluginSession {
   }
 
   getSessionForApp(appEndPoint) {
-    return _.find(this._sessions, (ses) => {
-      _.isEqual(ses.app, appEndPoint);
+    return find(this._sessions, (ses) => {
+      isEqual(ses.app, appEndPoint);
     });
   }
 

@@ -11,9 +11,9 @@
  *
  */
 
+import fs from 'node:fs';
 import path from 'node:path';
-import fs from 'fs-extra';
-import _ from 'lodash';
+import { cloneDeep } from 'lodash-es';
 import Client from './Client.js';
 
 const LOAD_TIMEOUT = 5000;
@@ -50,8 +50,8 @@ class AppSandboxHelper {
 
   copyPluginInSandboxStorage(sandboxStoragePath, pluginSource, callback) {
     try {
-      fs.ensureDirSync(sandboxStoragePath);
-      fs.copySync(pluginSource, sandboxStoragePath);
+      fs.mkdirSync(sandboxStoragePath, { recursive: true });
+      fs.cpSync(pluginSource, sandboxStoragePath, { recursive: true });
       return true;
     }
     catch (err) {
@@ -72,7 +72,7 @@ class AppSandboxHelper {
     }
 
     const pluginId = fetchPluginIdFromManifest(message.params.provider.path);
-    const sandboxPluginRequestMessage = _.cloneDeep(message);
+    const sandboxPluginRequestMessage = cloneDeep(message);
     const newPluginPath = this.getSandboxPluginPath(params.provider.path, pluginId);
     sandboxPluginRequestMessage.params.provider.path = newPluginPath;
     return sandboxPluginRequestMessage;
@@ -84,7 +84,8 @@ class AppSandboxHelper {
     }
 
     const storagePath = this._getSandboxUDTPluginsWorkspacePath();
-    fs.emptydirSync(storagePath);
+    fs.rmSync(storagePath, { recursive: true, force: true });
+    fs.mkdirSync(storagePath, { recursive: true });
   }
 }
 

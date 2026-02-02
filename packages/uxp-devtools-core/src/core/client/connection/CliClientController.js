@@ -11,7 +11,7 @@
  *
  */
 
-import _ from 'lodash';
+import { find, isEqual, remove } from 'lodash-es';
 import Connection from './Connection.js';
 import HostAppClient from './HostAppClient.js';
 
@@ -139,7 +139,7 @@ class CliClientController {
   }
 
   removeHostAppClient(data) {
-    _.remove(this.appClients, client => client.id === data.id);
+    remove(this.appClients, client => client.id === data.id);
     if (this._appConnectionListener) {
       this._appConnectionListener('appDisconnected', data.app);
     }
@@ -150,7 +150,7 @@ class CliClientController {
   }
 
   _getHostAppClient(appEndPoint) {
-    return _.find(this.appClients, client => _.isEqual(client.appEndPoint, appEndPoint));
+    return find(this.appClients, client => isEqual(client.appEndPoint, appEndPoint));
   }
 
   handlePluginUnload(data) {

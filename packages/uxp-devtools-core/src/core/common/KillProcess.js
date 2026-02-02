@@ -1,4 +1,7 @@
-import sh from 'shell-exec';
+import { exec } from 'node:child_process';
+import { promisify } from 'node:util';
+
+const execAsync = promisify(exec);
 
 export default function (port, method = 'tcp') {
   port = Number.parseInt(port);
@@ -8,7 +11,7 @@ export default function (port, method = 'tcp') {
   }
 
   if (process.platform === 'win32') {
-    return sh('netstat -nao')
+    return execAsync('netstat -nao')
       .then((res) => {
         const { stdout } = res;
         if (!stdout) {
@@ -27,11 +30,11 @@ export default function (port, method = 'tcp') {
           return match && match[0] && !acc.includes(match[0]) ? acc.concat(match[0]) : acc;
         }, []);
 
-        return sh(`TaskKill /F /PID ${pids.join(' /PID ')}`);
+        return execAsync(`TaskKill /F /PID ${pids.join(' /PID ')}`);
       });
   }
 
-  return sh(
+  return execAsync(
     `lsof -i ${method === 'udp' ? 'udp' : 'tcp'}:${port} | grep ${method === 'udp' ? 'UDP' : 'LISTEN'} | awk '{print $2}' | xargs kill -9`,
   );
 }

@@ -11,11 +11,11 @@
  *
  */
 
+import fs from 'node:fs';
 import { createRequire } from 'node:module';
 import path from 'node:path';
 import { DevToolsError } from '@adobe-fixed-uxp/uxp-devtools-core';
-import fs from 'fs-extra';
-import _ from 'lodash';
+import { intersection } from 'lodash-es';
 
 const require = createRequire(import.meta.url);
 
@@ -29,7 +29,7 @@ function getConflictingFilesList(pluginDir, uxpPackageDir) {
   ];
   const fileNames = fs.readdirSync(pluginDir);
   unsafeFiles = fs.readdirSync(uxpPackageDir);
-  const conflictingNames = _.intersection(fileNames, unsafeFiles);
+  const conflictingNames = intersection(fileNames, unsafeFiles);
   return conflictingNames;
 }
 
@@ -71,7 +71,7 @@ function initWithBundledPluginTemplate(pluginDir, templateName) {
     if (!checkDir.success) {
       return checkDir;
     }
-    fs.copySync(uxpPackageDir, pluginDir);
+    fs.cpSync(uxpPackageDir, pluginDir, { recursive: true });
     return ({ success: true });
   }
   catch (err) {

@@ -9,9 +9,9 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
+import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
-import fs from 'fs-extra';
 
 const args = process.argv.slice(2);
 
@@ -35,7 +35,7 @@ function setUxpDeveloperMode() {
   validateParams();
   const settingsFilePath = path.resolve(baseDirPath, relativeSettingsPath);
   const settingsDir = path.dirname(settingsFilePath);
-  fs.ensureDirSync(settingsDir);
+  fs.mkdirSync(settingsDir, { recursive: true });
 
   // write the settings config to the file.
   const configData = {

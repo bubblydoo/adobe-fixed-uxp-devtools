@@ -14,9 +14,9 @@
 import { execSync } from 'node:child_process';
 import dns from 'node:dns';
 import url from 'node:url';
+import fs from 'node:fs';
 import chalk from 'chalk';
-import fs from 'fs-extra';
-import _ from 'lodash';
+import { intersection } from 'lodash-es';
 
 // Check for file conflicts.
 function getConflictingFilesList(root) {
@@ -26,7 +26,7 @@ function getConflictingFilesList(root) {
     'yarn.lock',
   ];
   const fileNames = fs.readdirSync(root);
-  const removeFiles = _.intersection(fileNames, unsafeFiles);
+  const removeFiles = intersection(fileNames, unsafeFiles);
   return removeFiles;
 }
 

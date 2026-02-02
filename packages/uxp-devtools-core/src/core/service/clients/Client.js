@@ -54,6 +54,8 @@ class Client extends EventEmitter {
   }
 
   _handleClientMessage(messageJson) {
+    // todo: is this conversion needed in another place as well?
+    messageJson = typeof messageJson === 'string' ? messageJson : messageJson.toString('utf8')
     if (this.handlesRawMessages) {
       this.handleClientRawMessage(messageJson);
       return;

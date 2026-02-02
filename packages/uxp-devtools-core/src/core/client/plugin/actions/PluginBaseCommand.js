@@ -12,7 +12,7 @@
  */
 
 import util from 'node:util';
-import _ from 'lodash';
+import { find, isEqual } from 'lodash-es';
 import DevToolsError from '../../../common/DevToolsError.js';
 import { CoreErrorCodes, CoreLogMessage } from '../../../common/ErrorCodes.js';
 import AppsHelper from '../../../helpers/AppsHelper.js';
@@ -75,7 +75,7 @@ class PluginBaseCommand {
 
   _getSessionDetailsForAppEndpoints(sessions, aep) {
     const filtered = sessions.filter((session) => {
-      const obj = _.find(aep, ep => _.isEqual(ep, session.app));
+      const obj = find(aep, ep => isEqual(ep, session.app));
       return !!obj;
     });
     return filtered;
