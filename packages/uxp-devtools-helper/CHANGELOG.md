@@ -1,5 +1,11 @@
 # @adobe-fixed-uxp/uxp-devtools-helper
 
+## 1.6.1
+
+### Patch Changes
+
+- c6a4700: Fix postinstall setup script
+
 ## 1.6.0
 
 ### Minor Changes
