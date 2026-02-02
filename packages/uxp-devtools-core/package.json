@@ -19,13 +19,32 @@
   ],
   "exports": {
     ".": {
-      "import": "./src/index.js"
+      "types": "./src/index.ts",
+      "import": "./src/index.ts"
+    },
+    "./*": {
+      "types": "./src/*.ts",
+      "import": "./src/*.ts"
     },
     "./package.json": "./package.json"
   },
-  "main": "src/index.js",
+  "publishConfig": {
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js"
+      },
+      "./*": {
+        "types": "./dist/*.d.ts",
+        "import": "./dist/*.js"
+      },
+      "./package.json": "./package.json"
+    }
+  },
+  "main": "src/index.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@adobe-fixed-uxp/uxp-devtools-helper": "workspace:*",
@@ -36,5 +55,12 @@
     "ignore-walk": "^7.0.0",
     "lodash-es": "^4.17.21",
     "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "@adobe-fixed-uxp/tsconfig": "workspace:*",
+    "@types/archiver": "^6.0.3",
+    "@types/express": "^5.0.0",
+    "@types/lodash-es": "^4.17.12",
+    "@types/ws": "^8.5.14"
   }
 }
