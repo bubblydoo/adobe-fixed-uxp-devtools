@@ -56,6 +56,9 @@ importers:
       '@adobe-fixed-uxp/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
+      '@types/ignore-walk':
+        specifier: ^4.0.3
+        version: 4.0.3
       '@types/lodash-es':
         specifier: ^4.17.12
         version: 4.17.12
@@ -105,6 +108,9 @@ importers:
       '@types/express':
         specifier: ^5.0.0
         version: 5.0.6
+      '@types/ignore-walk':
+        specifier: ^4.0.3
+        version: 4.0.3
       '@types/lodash-es':
         specifier: ^4.17.12
         version: 4.17.12
@@ -456,6 +462,9 @@ packages:
 
   '@types/http-errors@2.0.5':
     resolution: {integrity: sha512-r8Tayk8HJnX0FztbZN7oVqGccWgw98T/0neJphO91KkmOzug1KkofZURD4UaD5uH8AqcFLfdPErnBod0u71/qg==}
+
+  '@types/ignore-walk@4.0.3':
+    resolution: {integrity: sha512-6V7wDsk0nz8LtRC7qeC0GfXadFLT4FdCtVbXhxoIGRdkn2kLr20iMLupRGiBhlZ79WWWqaObIdR3nkXfUrBPdQ==}
 
   '@types/json-schema@7.0.15':
     resolution: {integrity: sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==}
@@ -2848,6 +2857,10 @@ snapshots:
       '@types/serve-static': 2.2.0
 
   '@types/http-errors@2.0.5': {}
+
+  '@types/ignore-walk@4.0.3':
+    dependencies:
+      '@types/node': 22.19.7
 
   '@types/json-schema@7.0.15': {}
 

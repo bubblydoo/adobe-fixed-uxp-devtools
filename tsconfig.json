@@ -3,11 +3,5 @@
   "extends": "./packages/tsconfig/tsconfig.base.json",
   "compilerOptions": {
     "noEmit": true
-  },
-  "references": [
-    { "path": "packages/uxp-devtools-feature" },
-    { "path": "packages/uxp-devtools-helper" },
-    { "path": "packages/uxp-devtools-core" },
-    { "path": "packages/uxp-devtools-cli" }
-  ]
+  }
 }
