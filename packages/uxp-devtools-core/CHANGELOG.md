@@ -1,5 +1,12 @@
 # @adobe-fixed-uxp/uxp-devtools-core
 
+## 1.6.1
+
+### Patch Changes
+
+- Updated dependencies [c6a4700]
+  - @adobe-fixed-uxp/uxp-devtools-helper@1.6.1
+
 ## 1.6.0
 
 ### Minor Changes
