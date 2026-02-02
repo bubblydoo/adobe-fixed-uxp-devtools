@@ -4,8 +4,7 @@
   "private": true,
   "workspaces": {
     "packages": [
-      "packages/*",
-      "packages/uxp-templates-pack/*"
+      "packages/*"
     ],
     "nohoist": []
   },
