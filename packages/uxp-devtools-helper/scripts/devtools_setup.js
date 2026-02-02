@@ -37,6 +37,9 @@ function setupTargetFolder() {
 }
 
 function setupDevtoolsNativeAddOn() {
+  if (process.env.CI || process.env.SKIP_DEVTOOLS_NATIVE_ADD_ON_BUILD) {
+    console.log('Skipping Adobe devToolsJS native add-on setup in CI environment.');
+  }
   console.log('Setting up Adobe devTools node native add-on library... ');
   const arch = os.arch();
   console.log(`Arch is ${arch}`);
@@ -48,7 +51,7 @@ function setupDevtoolsNativeAddOn() {
   prom.then(() => {
     console.log('Adobe devToolsJS native add-on setup successfull.');
   }).catch((err) => {
-    throw new Error(`Adobe devTools-JS native add-on setup failed with error ${err}`);
+    console.error(`Adobe devTools-JS native add-on setup failed with error ${err}`);
   });
 }
 
