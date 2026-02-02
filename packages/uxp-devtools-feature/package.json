@@ -1,7 +1,7 @@
 {
   "name": "@adobe-fixed-uxp/uxp-devtools-feature",
   "type": "module",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "description": "UXP Devtools Feature Config Module",
   "author": "Adobe Inc",
   "license": "Apache-2.0",
