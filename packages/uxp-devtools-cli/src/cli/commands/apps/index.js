@@ -11,16 +11,16 @@
  *
  */
 
-const { appsListCommand } = require("./AppsCmds");
+import { appsListCommand } from './AppsCmds.js';
 
 function registerAppSubCommands(yargs) {
-    return yargs.command(appsListCommand);
+  return yargs.command(appsListCommand);
 }
 
 const appsCommand = {
-    command: "apps <command>",
-    description: "Query applications that support UXP Developer Tools",
-    builder: registerAppSubCommands,
+  command: 'apps <command>',
+  description: 'Query applications that support UXP Developer Tools',
+  builder: registerAppSubCommands,
 };
 
-module.exports = appsCommand;
+export default appsCommand;

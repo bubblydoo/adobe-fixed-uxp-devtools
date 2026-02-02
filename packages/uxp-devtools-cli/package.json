@@ -1,15 +1,10 @@
 {
   "name": "@adobe-fixed-uxp/uxp-devtools-cli",
+  "type": "module",
   "version": "1.5.9",
   "description": "Command line interface for rapid UXP plugin development",
-  "main": "src/uxp.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "uxp": "src/uxp.js"
-  },
-  "bin": {
-    "uxp": "src/uxp.js"
-  },
+  "author": "Adobe Inc",
+  "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "git@github.com:adobe-uxp/devtools-cli.git",
@@ -21,22 +16,27 @@
     "cli",
     "plugin"
   ],
-  "author": "Adobe Inc",
-  "license": "Apache-2.0",
+  "exports": {
+    ".": {
+      "import": "./src/uxp.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "main": "src/uxp.js",
+  "bin": {
+    "uxp": "src/uxp.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "uxp": "src/uxp.js"
+  },
   "dependencies": {
-    "@adobe-fixed-uxp/uxp-devtools-core": "^1.5.1",
-    "@adobe-fixed-uxp/uxp-wdio-automation-template": "^1.0.0",
+    "@adobe-fixed-uxp/uxp-devtools-core": "workspace:*",
     "app-path": "^3.3.0",
     "chalk": "^3.0.0",
     "cli-table3": "^0.6.0",
     "prompts": "^2.3.2",
     "semver": "^7.3.2",
     "yargs": "^15.3.1"
-  },
-  "devDependencies": {
-    "@adobe-fixed-uxp/uxp-inspect-frontend": "^1.5.1"
-  },
-  "optionalDependencies": {
-    "@adobe-fixed-uxp/uxp-inspect-frontend": "^1.5.1"
   }
 }

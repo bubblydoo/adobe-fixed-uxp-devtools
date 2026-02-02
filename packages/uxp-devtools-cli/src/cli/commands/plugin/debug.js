@@ -11,56 +11,45 @@
  *
  */
 
-const { loadPluginSessionFromUxpRc }  = require("../../utils/Common");
-const { lauchDevtoolsInspectApp } = require("../../utils/CLICDTInspectMgr");
+import { loadPluginSessionFromUxpRc } from '../../utils/common.js';
 
 const debugOptions = {
-    apps: {
-        describe: "If you plugin is loaded in multiple apps. You can use this option to limit which app you want the limit the plugin debuggin to. By defualt you will able to debug all apps.",
-        type: "string",
-    },
+  apps: {
+    describe: 'If you plugin is loaded in multiple apps. You can use this option to limit which app you want the limit the plugin debuggin to. By defualt you will able to debug all apps.',
+    type: 'string',
+  },
 };
 
 function launchCDTInspectWindow(cdtDebugWsUrl, pluginInfo, appInfo, forConsole) {
-    const cdtDetails = {
-        app: appInfo,
-        plugin: pluginInfo,
-        consoleOnly: forConsole
-    };
-
-    const type = forConsole ? "Console" : "Inspect";
-
-    console.log(`Launching the ${type} Window ...`);
-    const prom = lauchDevtoolsInspectApp(cdtDebugWsUrl, cdtDetails);
-    return prom;
+  throw new Error('Not implemented');
 }
 
 function handlePluginDebugCommand(args) {
-    const apps = args.apps ? args.apps.split(" ") : [];
-    const params = {
-        apps,
-    };
-    const forConsole = args.forConsole || false;
-    // load the current plugin session from the uxprc file.
-    const pluginSession = loadPluginSessionFromUxpRc();
-    const prom = this.app.client.executePluginCommand("debugPlugin", pluginSession, params);
-    return prom.then((debugUrls) => {
-        const proms = [];
-        debugUrls.forEach(debugData => {
-            const appInfo = debugData.appInfo;
-            const wsdebugUrl = debugData.cdtDebugWsUrl;
-            const prom = launchCDTInspectWindow(wsdebugUrl, pluginSession.pluginInfo, appInfo, forConsole);
-            proms.push(prom);
-        });
-        return Promise.all(proms);
+  const apps = args.apps ? args.apps.split(' ') : [];
+  const params = {
+    apps,
+  };
+  const forConsole = args.forConsole || false;
+  // load the current plugin session from the uxprc file.
+  const pluginSession = loadPluginSessionFromUxpRc();
+  const prom = this.app.client.executePluginCommand('debugPlugin', pluginSession, params);
+  return prom.then((debugUrls) => {
+    const proms = [];
+    debugUrls.forEach((debugData) => {
+      const appInfo = debugData.appInfo;
+      const wsdebugUrl = debugData.cdtDebugWsUrl;
+      const prom = launchCDTInspectWindow(wsdebugUrl, pluginSession.pluginInfo, appInfo, forConsole);
+      proms.push(prom);
     });
+    return Promise.all(proms);
+  });
 }
 
 const debugCommand = {
-    command: "debug",
-    description: "Debug the currently loaded plugin.",
-    handler: handlePluginDebugCommand,
-    builder: debugOptions,
+  command: 'debug',
+  description: 'Debug the currently loaded plugin.',
+  handler: handlePluginDebugCommand,
+  builder: debugOptions,
 };
 
-module.exports = debugCommand;
+export default debugCommand;

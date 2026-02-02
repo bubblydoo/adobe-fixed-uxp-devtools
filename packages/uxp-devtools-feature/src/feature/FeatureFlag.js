@@ -1,4 +1,3 @@
-/* eslint-disable global-require */
 /*
  *  Copyright 2020 Adobe Systems Incorporated. All rights reserved.
  *  This file is licensed to you under the Apache License, Version 2.0 (the "License");
@@ -11,29 +10,29 @@
  *  governing permissions and limitations under the License.
  *
  */
+import { createRequire } from 'node:module';
+
+const require = createRequire(import.meta.url);
+
 let sFeatureConfig = null;
 
 function getFeatureConfig() {
-    if(sFeatureConfig != null) {
-        return sFeatureConfig;
-    }
+  if (sFeatureConfig != null) {
+    return sFeatureConfig;
+  }
 
-    try{
-        sFeatureConfig = require("./../configs/featureFlag.json");
-        return sFeatureConfig;
-    }
-    catch(ex) {
-        console.log(`Failed to read the feature configuration file.`);
-        sFeatureConfig = {};
-        return sFeatureConfig;
-    }
+  try {
+    sFeatureConfig = require('./../configs/featureFlag.json');
+    return sFeatureConfig;
+  }
+  catch (ex) {
+    console.log(`Failed to read the feature configuration file.`);
+    sFeatureConfig = {};
+    return sFeatureConfig;
+  }
 }
 
-function isFeatureEnabled(featureName) {
-    const featureFlagConfig = getFeatureConfig();
-    return !!(featureFlagConfig && featureFlagConfig[featureName]);
+export function isFeatureEnabled(featureName) {
+  const featureFlagConfig = getFeatureConfig();
+  return !!(featureFlagConfig && featureFlagConfig[featureName]);
 }
-
-module.exports = {
-    isFeatureEnabled
-};

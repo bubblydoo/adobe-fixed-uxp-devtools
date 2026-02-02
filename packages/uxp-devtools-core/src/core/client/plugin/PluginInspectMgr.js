@@ -1,6 +1,3 @@
-/* eslint-disable global-require */
-/* eslint-disable max-len */
-/* eslint-disable class-methods-use-this */
 /*
  *  Copyright 2020 Adobe Systems Incorporated. All rights reserved.
  *  This file is licensed to you under the Apache License, Version 2.0 (the "License");
@@ -14,13 +11,13 @@
  *
  */
 
-const uxpInspectApp = require("@adobe/uxp-inspect-app");
+import uxpInspectApp from '@adobe/uxp-inspect-app';
 
 class PluginInspectMgr {
-    static showInspectWindow(details) {
-        uxpInspectApp("", details.app.id, details.app.version, details.data.wsdebugUrl);
-        return Promise.resolve(true);
-    }
+  static showInspectWindow(details) {
+    uxpInspectApp('', details.app.id, details.app.version, details.data.wsdebugUrl);
+    return Promise.resolve(true);
+  }
 }
 
-module.exports = PluginInspectMgr;
+export default PluginInspectMgr;

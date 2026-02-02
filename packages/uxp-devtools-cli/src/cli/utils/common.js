@@ -11,24 +11,22 @@
  *
  */
 
+import { CoreHelpers } from '@adobe-fixed-uxp/uxp-devtools-core';
 
 function loadPluginSessionFromUxpRc() {
-    // eslint-disable-next-line global-require
-    const { CoreHelpers } = require("@adobe-fixed-uxp/uxp-devtools-core");
-    return CoreHelpers.PluginSession.createFromRcFile();
+  return CoreHelpers.PluginSession.createFromRcFile();
 }
 
 function createDeferredPromise() {
-    const obj = {};
-    obj.promise = new Promise((resolve, reject) => {
-        obj.resolve = resolve;
-        obj.reject = reject;
-    });
-    return obj;
+  const obj = {};
+  obj.promise = new Promise((resolve, reject) => {
+    obj.resolve = resolve;
+    obj.reject = reject;
+  });
+  return obj;
 }
 
-
-module.exports = {
-    loadPluginSessionFromUxpRc,
-    createDeferredPromise
+export {
+  createDeferredPromise,
+  loadPluginSessionFromUxpRc,
 };

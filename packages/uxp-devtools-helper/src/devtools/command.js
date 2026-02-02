@@ -9,39 +9,39 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const path = require("path");
-const fs = require("fs-extra");
-const process = require("process");
+import path from 'node:path';
+import process from 'node:process';
+import fs from 'fs-extra';
 
 const args = process.argv.slice(2);
 
-const isEnable = args[0] === "enable";
-const dirs =  args[1].split(";;");
+const isEnable = args[0] === 'enable';
+const dirs = args[1].split(';;');
 
 const baseDirPath = dirs[0];
 const relativeSettingsPath = dirs[1];
 
 function validateParams() {
-    if (baseDirPath.length > 0 && relativeSettingsPath.length > 0) {
-        const baseDirExists = fs.existsSync(baseDirPath);
-        if (baseDirExists) {
-            return;
-        }
+  if (baseDirPath.length > 0 && relativeSettingsPath.length > 0) {
+    const baseDirExists = fs.existsSync(baseDirPath);
+    if (baseDirExists) {
+      return;
     }
-    throw new Error(`Devtools Command received invalid params : ${args}`);
+  }
+  throw new Error(`Devtools Command received invalid params : ${args}`);
 }
 
 function setUxpDeveloperMode() {
-    validateParams();
-    const settingsFilePath = path.resolve(baseDirPath, relativeSettingsPath);
-    const settingsDir = path.dirname(settingsFilePath);
-    fs.ensureDirSync(settingsDir);
+  validateParams();
+  const settingsFilePath = path.resolve(baseDirPath, relativeSettingsPath);
+  const settingsDir = path.dirname(settingsFilePath);
+  fs.ensureDirSync(settingsDir);
 
-    // write the settings config to the file.
-    const configData = {
-        developer: !!isEnable,
-    };
-    fs.writeFileSync(settingsFilePath, JSON.stringify(configData, null, 4), "utf8");
+  // write the settings config to the file.
+  const configData = {
+    developer: !!isEnable,
+  };
+  fs.writeFileSync(settingsFilePath, JSON.stringify(configData, null, 4), 'utf8');
 }
 
 setUxpDeveloperMode();

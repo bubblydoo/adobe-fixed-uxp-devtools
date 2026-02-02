@@ -11,71 +11,74 @@
  *
  */
 
-const path = require("path");
-const fs = require("fs-extra");
-const _ = require("lodash");
-const { DevToolsError } = require("@adobe-fixed-uxp/uxp-devtools-core");
+import { createRequire } from 'node:module';
+import path from 'node:path';
+import { DevToolsError } from '@adobe-fixed-uxp/uxp-devtools-core';
+import fs from 'fs-extra';
+import _ from 'lodash';
+
+const require = createRequire(import.meta.url);
 
 // Check for file conflicts.
 function getConflictingFilesList(pluginDir, uxpPackageDir) {
-    let unsafeFiles = [
-        "package.json",
-        "manifest.json",
-        "yarn.lock",
-        "package.lock.json"
-    ];
-    const fileNames = fs.readdirSync(pluginDir);
-    unsafeFiles = fs.readdirSync(uxpPackageDir);
-    const conflictingNames = _.intersection(fileNames, unsafeFiles);
-    return conflictingNames;
+  let unsafeFiles = [
+    'package.json',
+    'manifest.json',
+    'yarn.lock',
+    'package.lock.json',
+  ];
+  const fileNames = fs.readdirSync(pluginDir);
+  unsafeFiles = fs.readdirSync(uxpPackageDir);
+  const conflictingNames = _.intersection(fileNames, unsafeFiles);
+  return conflictingNames;
 }
 
 function sanityCheckPluginDirectory(pluginDir, uxpPackageDir) {
-    // Check user has read/write access to the directory.
-    try {
-        fs.accessSync(pluginDir, fs.constants.W_OK | fs.constants.R_OK);
-    }
-    catch (error) {
-        return ({ success: false , error: DevToolsError.ErrorCodes.INVALID_PERMISSIONS });
-    }
+  // Check user has read/write access to the directory.
+  try {
+    fs.accessSync(pluginDir, fs.constants.W_OK | fs.constants.R_OK);
+  }
+  catch (error) {
+    return ({ success: false, error: DevToolsError.ErrorCodes.INVALID_PERMISSIONS });
+  }
 
-    // Check if directory has conflicting files.
-    const conflictingNames = getConflictingFilesList(pluginDir, uxpPackageDir);
-    if (conflictingNames.length > 0) {
-        console.log(`The directory ${pluginDir} contains files that could conflict: ${conflictingNames.toString()}`);
-        return ({ success: false , error: DevToolsError.ErrorCodes.NONEMPTY_DIRECTORY });
-    }
-    return ({ success: true });
+  // Check if directory has conflicting files.
+  const conflictingNames = getConflictingFilesList(pluginDir, uxpPackageDir);
+  if (conflictingNames.length > 0) {
+    console.log(`The directory ${pluginDir} contains files that could conflict: ${conflictingNames.toString()}`);
+    return ({ success: false, error: DevToolsError.ErrorCodes.NONEMPTY_DIRECTORY });
+  }
+  return ({ success: true });
 }
 
 function getTemplateDirFromName(templateName) {
-    const packageName = `@adobe/uxp-template-${templateName}`;
-    const packageJsonFile = `${packageName}/package.json`;
-    try {
-        const templatePackageDir = require.resolve(packageJsonFile);
-        return path.dirname(templatePackageDir);
-    }
-    catch (err) {
-        throw new Error(`Invalid Template Name ${templateName}. `);
-    }
+  const packageName = `@adobe/uxp-template-${templateName}`;
+  const packageJsonFile = `${packageName}/package.json`;
+  try {
+    const templatePackageDir = require.resolve(packageJsonFile);
+    return path.dirname(templatePackageDir);
+  }
+  catch (err) {
+    throw new Error(`Invalid Template Name ${templateName}. `);
+  }
 }
 
 function initWithBundledPluginTemplate(pluginDir, templateName) {
-    try {
-        const tempalteDir = getTemplateDirFromName(templateName);
-        const uxpPackageDir = path.resolve(tempalteDir, "template");
-        const checkDir = sanityCheckPluginDirectory(pluginDir, uxpPackageDir);
-        if (!checkDir.success) {
-            return checkDir;
-        }
-        fs.copySync(uxpPackageDir, pluginDir);
-        return ({ success: true });
+  try {
+    const tempalteDir = getTemplateDirFromName(templateName);
+    const uxpPackageDir = path.resolve(tempalteDir, 'template');
+    const checkDir = sanityCheckPluginDirectory(pluginDir, uxpPackageDir);
+    if (!checkDir.success) {
+      return checkDir;
     }
-    catch (err) {
-        return ({ success: false , error: err });
-    }
+    fs.copySync(uxpPackageDir, pluginDir);
+    return ({ success: true });
+  }
+  catch (err) {
+    return ({ success: false, error: err });
+  }
 }
 
-module.exports = {
-    initWithBundledPluginTemplate
+export {
+  initWithBundledPluginTemplate,
 };

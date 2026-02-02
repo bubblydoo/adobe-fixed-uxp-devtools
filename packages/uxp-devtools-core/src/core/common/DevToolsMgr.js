@@ -10,41 +10,41 @@
  *  governing permissions and limitations under the License.
  *
  */
-/* eslint-disable class-methods-use-this */
-const DevToolsHelper = require("@adobe-fixed-uxp/uxp-devtools-helper");
+
+import DevToolsHelper from '@adobe-fixed-uxp/uxp-devtools-helper';
 
 class DevToolsMgr {
-    constructor(isServer) {
-        this._devToolsHelper = new DevToolsHelper(isServer);
-    }
+  constructor(isServer) {
+    this._devToolsHelper = new DevToolsHelper(isServer);
+  }
 
-    setServerDetails(port) {
-        this._devToolsHelper.setServerDetails(port);
-    }
+  setServerDetails(port) {
+    this._devToolsHelper.setServerDetails(port);
+  }
 
-    getAppsList() {
-        return Promise.resolve(this._devToolsHelper.getAppsList());
-    }
+  getAppsList() {
+    return Promise.resolve(this._devToolsHelper.getAppsList());
+  }
 
-    disableDevTools(options) {
-        return DevToolsHelper.disableDevTools(options);
-    }
+  disableDevTools(options) {
+    return DevToolsHelper.disableDevTools(options);
+  }
 
-    enableDevTools(options) {
-        return DevToolsHelper.enableDevTools(options);
-    }
+  enableDevTools(options) {
+    return DevToolsHelper.enableDevTools(options);
+  }
 
-    isDevToolsEnabled() {
-        return DevToolsHelper.isDevToolsEnabled();
-    }
+  isDevToolsEnabled() {
+    return DevToolsHelper.isDevToolsEnabled();
+  }
 
-    discoverServicePort() {
-        return this._devToolsHelper.getServicePort();
-    }
+  discoverServicePort() {
+    return this._devToolsHelper.getServicePort();
+  }
 
-    terminate() {
-        this._devToolsHelper.terminate();
-    }
+  terminate() {
+    this._devToolsHelper.terminate();
+  }
 }
 
-module.exports = DevToolsMgr;
+export default DevToolsMgr;

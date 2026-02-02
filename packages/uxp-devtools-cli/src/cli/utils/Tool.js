@@ -11,80 +11,76 @@
  *
  */
 
-/* eslint-disable func-names */
-/* eslint-disable global-require */
-
-const { UDTApplication } = require("@adobe-fixed-uxp/uxp-devtools-core");
+import { UDTApplication } from '@adobe-fixed-uxp/uxp-devtools-core';
+import yargs from 'yargs/yargs';
 
 class Tool {
-    constructor(modules) {
-        this.Tool = Tool;
-        this.app = UDTApplication.instance();
-        this._commands = modules;
-    }
+  constructor(modules) {
+    this.Tool = Tool;
+    this.app = UDTApplication.instance();
+    this._commands = modules;
+  }
 
-    run(args) {
-        // Make sure we don't accept paramaters that are not defined.
-        const toolThiz = this;
-        const yargs = require("yargs/yargs")(args);
-        yargs.strict(true);
-        const origYargsCommand = yargs.command;
-        // wrap the command handler into common one - we can inject common objects here -
-        // and also handle any errors etc.
-        yargs.command = function(mod) {
-            const module = mod;
-            const wrapHandler = function(handler) {
-                if (!handler) {
-                    return null;
-                }
-                return function(...handlerArgs) {
-                    // return a promise object -
-                    const prom = new Promise((resolve) => {
-                        resolve(handler.call(toolThiz, ...handlerArgs));
-                    });
-                    return prom.then((res) => {
-                        const commandResult = {
-                            data: res,
-                            success: true,
-                        };
-                        if (process.env.NODE_ENV === "test") {
-                            console.log(JSON.stringify(commandResult));
-                        }
-                        return commandResult;
-                    }).catch((err) => {
-                        // eslint-disable-next-line no-underscore-dangle
-                        console.error(`Command '${toolThiz._currentCommand}' failed.`);
-                        console.error(`${err}`);
-                        // crajTODO - check if tests gets affected by setting this.
-                        process.exitCode = 1;
-                        const commandResult = {
-                            error: err,
-                            success: false,
-                        };
-                        if (process.env.NODE_ENV === "test") {
-                            console.log(JSON.stringify(commandResult));
-                        }
-                        return commandResult;
-                    });
-                };
+  run(args) {
+    // Make sure we don't accept paramaters that are not defined.
+    const toolThiz = this;
+    const yargsInstance = yargs(args);
+    yargsInstance.strict(true);
+    const origYargsCommand = yargsInstance.command;
+    // wrap the command handler into common one - we can inject common objects here -
+    // and also handle any errors etc.
+    yargsInstance.command = function (mod) {
+      const module = mod;
+      const wrapHandler = function (handler) {
+        if (!handler) {
+          return null;
+        }
+        return function (...handlerArgs) {
+          // return a promise object -
+          const prom = new Promise((resolve) => {
+            resolve(handler.call(toolThiz, ...handlerArgs));
+          });
+          return prom.then((res) => {
+            const commandResult = {
+              data: res,
+              success: true,
             };
-            module.handler = wrapHandler(module.handler);
-            return origYargsCommand(module);
+            if (process.env.NODE_ENV === 'test') {
+              console.log(JSON.stringify(commandResult));
+            }
+            return commandResult;
+          }).catch((err) => {
+            console.error(`Command '${toolThiz._currentCommand}' failed.`);
+            console.error(`${err}`);
+            // crajTODO - check if tests gets affected by setting this.
+            process.exitCode = 1;
+            const commandResult = {
+              error: err,
+              success: false,
+            };
+            if (process.env.NODE_ENV === 'test') {
+              console.log(JSON.stringify(commandResult));
+            }
+            return commandResult;
+          });
         };
+      };
+      module.handler = wrapHandler(module.handler);
+      return origYargsCommand.call(yargsInstance, module);
+    };
 
-        for (const command of this._commands) {
-            yargs.command(command);
-        }
-
-        // eslint-disable-next-line no-unused-vars
-        const params = yargs.help().recommendCommands().argv;
-        const cmds = params._;
-        if (!cmds.length) {
-            yargs.showHelp();
-            return;
-        }
-        this._currentCommand = cmds.join(" ");
+    for (const command of this._commands) {
+      yargsInstance.command(command);
     }
+
+    const params = yargsInstance.help().recommendCommands().argv;
+    const cmds = params._;
+    if (!cmds.length) {
+      yargsInstance.showHelp();
+      return;
+    }
+    this._currentCommand = cmds.join(' ');
+  }
 }
 
-module.exports = Tool;
+export default Tool;

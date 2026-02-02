@@ -10,38 +10,39 @@
  *  governing permissions and limitations under the License.
  *
  */
-const path = require("path");
+
+import path from 'node:path';
 
 const validateOptions = {
-    manifest: {
-        describe: "Relative path to plugin's manifest.json file. Defaults to the manifest.json file in current working directory.",
-        demandOption: false,
-    }
+  manifest: {
+    describe: 'Relative path to plugin\'s manifest.json file. Defaults to the manifest.json file in current working directory.',
+    demandOption: false,
+  },
 };
 
 function handlePluginValidateCommand(args) {
-    const manifestRelPath = args.manifest ? args.manifest : "manifest.json";
-    const manifest = path.resolve(manifestRelPath);
-    const params = {
-        manifest,
-    };
+  const manifestRelPath = args.manifest ? args.manifest : 'manifest.json';
+  const manifest = path.resolve(manifestRelPath);
+  const params = {
+    manifest,
+  };
 
-    const prom = this.app.client.executePluginCommand("validatePluginManifest", params);
-    return prom.then(() => {
-        console.log("Manifest is validated successfully.");
-        return true;
-    }).catch((err) => {
-        console.error("Manifest Validation Failed.");
-        console.error(`${err}`);
-        return false;
-    });
+  const prom = this.app.client.executePluginCommand('validatePluginManifest', params);
+  return prom.then(() => {
+    console.log('Manifest is validated successfully.');
+    return true;
+  }).catch((err) => {
+    console.error('Manifest Validation Failed.');
+    console.error(`${err}`);
+    return false;
+  });
 }
 
 const validateCommand = {
-    command: "validate",
-    description: "Validates the plugin manifest.",
-    handler: handlePluginValidateCommand,
-    builder: validateOptions,
+  command: 'validate',
+  description: 'Validates the plugin manifest.',
+  handler: handlePluginValidateCommand,
+  builder: validateOptions,
 };
 
-module.exports = validateCommand;
+export default validateCommand;

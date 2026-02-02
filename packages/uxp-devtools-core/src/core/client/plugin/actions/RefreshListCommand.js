@@ -1,4 +1,3 @@
-/* eslint-disable class-methods-use-this */
 /*
  *  Copyright 2020 Adobe Systems Incorporated. All rights reserved.
  *  This file is licensed to you under the Apache License, Version 2.0 (the "License");
@@ -12,55 +11,54 @@
  *
  */
 
-/* eslint-disable max-len */
-const PluginBaseCommand = require("./PluginBaseCommand");
-const DevToolsError = require("../../../common/DevToolsError");
+import DevToolsError from '../../../common/DevToolsError.js';
+import PluginBaseCommand from './PluginBaseCommand.js';
 
 function createMessage() {
-    const msg = {
-        command: "Plugin",
-        action: "list"
-    };
-    return msg;
+  const msg = {
+    command: 'Plugin',
+    action: 'list',
+  };
+  return msg;
 }
 
 class RefreshListCommand extends PluginBaseCommand {
-    constructor(pluginMgr) {
-        super(pluginMgr);
-    }
+  constructor(pluginMgr) {
+    super(pluginMgr);
+  }
 
-    get name() {
-        return "Refresh List";
-    }
+  get name() {
+    return 'Refresh List';
+  }
 
-    validateParams() {
-        return Promise.resolve(true);
-    }
+  validateParams() {
+    return Promise.resolve(true);
+  }
 
-    executeCommand() {
-        const applicableApps = this.pm._cliClientMgr.getConnectedApps();
-        if (!applicableApps.length) {
-            throw new DevToolsError(DevToolsError.ErrorCodes.NO_APPS_CONNECTED_TO_SERVICE);
-        }
-        const loadJsonMsg = createMessage();
-        return this._sendMessageToAppsAndReconcileResults(applicableApps, loadJsonMsg, this._handleCommandResult.bind(this));
+  executeCommand() {
+    const applicableApps = this.pm._cliClientMgr.getConnectedApps();
+    if (!applicableApps.length) {
+      throw new DevToolsError(DevToolsError.ErrorCodes.NO_APPS_CONNECTED_TO_SERVICE);
     }
+    const loadJsonMsg = createMessage();
+    return this._sendMessageToAppsAndReconcileResults(applicableApps, loadJsonMsg, this._handleCommandResult.bind(this));
+  }
 
-    _handleCommandResult(pluginResults) {
-        let pluginSet = [];
-        for (const pluginResult of pluginResults) {
-            const { app, data } = pluginResult;
-            const { plugins } = data;
-            for (const plugin of plugins) {
-                const pluginInfo = {
-                    plugin,
-                    app
-                };
-                pluginSet.push(pluginInfo);
-            }
-        }
-        return pluginSet;
+  _handleCommandResult(pluginResults) {
+    const pluginSet = [];
+    for (const pluginResult of pluginResults) {
+      const { app, data } = pluginResult;
+      const { plugins } = data;
+      for (const plugin of plugins) {
+        const pluginInfo = {
+          plugin,
+          app,
+        };
+        pluginSet.push(pluginInfo);
+      }
     }
+    return pluginSet;
+  }
 }
 
-module.exports = RefreshListCommand;
+export default RefreshListCommand;

@@ -19,8 +19,8 @@ LoggerLevel.ERROR = 1;
 LoggerLevel.WARN = 2; // warning and above.
 LoggerLevel.INFO = 3; // info and above -
 LoggerLevel.VERBOSE = 4; // verbose and above - so, contains verbose, info, warning and errors.
-LoggerLevel.DEFAULT =  LoggerLevel.VERBOSE;
+LoggerLevel.DEFAULT = LoggerLevel.VERBOSE;
 
-module.exports = {
-    LoggerLevel,
+export {
+  LoggerLevel,
 };

@@ -1,4 +1,3 @@
-/* eslint-disable class-methods-use-this */
 /*
  *  Copyright 2020 Adobe Systems Incorporated. All rights reserved.
  *  This file is licensed to you under the Apache License, Version 2.0 (the "License");
@@ -11,49 +10,49 @@
  *  governing permissions and limitations under the License.
  *
  */
-const _ = require("lodash");
-const UxpRcMgr = require("../../common/UxpRCMgr");
+import _ from 'lodash';
+import UxpRcMgr from '../../common/UxpRCMgr.js';
 
 class PluginSession {
-    static createFromRcFile() {
-        const data = UxpRcMgr.readPluginSession();
-        return new PluginSession(data.sessions, data.info);
-    }
+  static createFromRcFile() {
+    const data = UxpRcMgr.readPluginSession();
+    return new PluginSession(data.sessions, data.info);
+  }
 
-    static createFromLoadResults(loadResults, pluginInfo) {
-        const sessions = loadResults.map((res) => {
-            const { app, data } = res;
-            return {
-                app,
-                pluginSessionId: data.pluginSessionId,
-            };
-        });
-        return new PluginSession(sessions, pluginInfo);
-    }
+  static createFromLoadResults(loadResults, pluginInfo) {
+    const sessions = loadResults.map((res) => {
+      const { app, data } = res;
+      return {
+        app,
+        pluginSessionId: data.pluginSessionId,
+      };
+    });
+    return new PluginSession(sessions, pluginInfo);
+  }
 
-    constructor(sessions, pluginInfo) {
-        this._sessions = sessions;
-        this._pluginInfo = pluginInfo || {};
-    }
+  constructor(sessions, pluginInfo) {
+    this._sessions = sessions;
+    this._pluginInfo = pluginInfo || {};
+  }
 
-    get sessions() {
-        return this._sessions;
-    }
+  get sessions() {
+    return this._sessions;
+  }
 
-    get pluginInfo() {
-        return this._pluginInfo;
-    }
+  get pluginInfo() {
+    return this._pluginInfo;
+  }
 
-    getSessionForApp(appEndPoint) {
-        return _.find(this._sessions, (ses) => {
-            _.isEqual(ses.app, appEndPoint);
-        });
-    }
+  getSessionForApp(appEndPoint) {
+    return _.find(this._sessions, (ses) => {
+      _.isEqual(ses.app, appEndPoint);
+    });
+  }
 
-    commitToRc(uxprcDirPath) {
-        UxpRcMgr.setUxprcPath(uxprcDirPath);
-        UxpRcMgr.writePluginSession(this._sessions, this._pluginInfo);
-    }
+  commitToRc(uxprcDirPath) {
+    UxpRcMgr.setUxprcPath(uxprcDirPath);
+    UxpRcMgr.writePluginSession(this._sessions, this._pluginInfo);
+  }
 }
 
-module.exports = PluginSession;
+export default PluginSession;

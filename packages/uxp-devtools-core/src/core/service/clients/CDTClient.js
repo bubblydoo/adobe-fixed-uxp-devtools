@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 /*
  *  Copyright 2020 Adobe Systems Incorporated. All rights reserved.
  *  This file is licensed to you under the Apache License, Version 2.0 (the "License");
@@ -12,67 +11,66 @@
  *
  */
 
-const Client = require("./Client");
+import Client from './Client.js';
 
 class CDTClient extends Client {
-    // eslint-disable-next-line class-methods-use-this
-    get type() {
-        return "cdt_client";
-    }
+  get type() {
+    return 'cdt_client';
+  }
 
-    static create(server, socket, url) {
-        const urlComps = url.split("/");
-        return new CDTClient(server, socket, urlComps[urlComps.length - 1]);
-    }
+  static create(server, socket, url) {
+    const urlComps = url.split('/');
+    return new CDTClient(server, socket, urlComps[urlComps.length - 1]);
+  }
 
-    constructor(server, socket, clientSessionId) {
-        super(server, socket);
-        this._appClient = server.pluginSessionMgr.getAppClientFromSessionId(server.clients, clientSessionId);
-        const pluginDetails = server.pluginSessionMgr.getPluginFromSessionId(clientSessionId);
-        if (!this._appClient || !pluginDetails) {
-            this._appClient = null;
-            return;
-        }
-        this._plugin = pluginDetails;
-        this._plugin.setCDTClient(this);
-        this.handlesRawMessages = true;
-        this._appClient.handlePluginCDTConnected(this._plugin.hostPlugInSessionId);
+  constructor(server, socket, clientSessionId) {
+    super(server, socket);
+    this._appClient = server.pluginSessionMgr.getAppClientFromSessionId(server.clients, clientSessionId);
+    const pluginDetails = server.pluginSessionMgr.getPluginFromSessionId(clientSessionId);
+    if (!this._appClient || !pluginDetails) {
+      this._appClient = null;
+      return;
     }
+    this._plugin = pluginDetails;
+    this._plugin.setCDTClient(this);
+    this.handlesRawMessages = true;
+    this._appClient.handlePluginCDTConnected(this._plugin.hostPlugInSessionId);
+  }
 
-    handleClientRawMessage(rawCDTMessage) {
-        if (!this._appClient) {
-            this.send({
-                error: "There is no valid app or plugin session applicable for this CDT client.",
-            });
-            return;
-        }
-        this._appClient.sendCDTMessage(rawCDTMessage, this._plugin.hostPlugInSessionId);
+  handleClientRawMessage(rawCDTMessage) {
+    if (!this._appClient) {
+      this.send({
+        error: 'There is no valid app or plugin session applicable for this CDT client.',
+      });
+      return;
     }
+    this._appClient.sendCDTMessage(rawCDTMessage, this._plugin.hostPlugInSessionId);
+  }
 
-    on_clientDidDisconnect(client) {
-        // If the client is not yet ready, we will just skip it.
-        if (!this._appClient) {
-            return;
-        }
-        if (client.type === "app" && client.id === this._appClient.id) {
-            // the app connection got closed - so terminate this cdt debugging session.
-            this.handleHostPluginUnloaded();
-        }
+  on_clientDidDisconnect(client) {
+    // If the client is not yet ready, we will just skip it.
+    if (!this._appClient) {
+      return;
     }
+    if (client.type === 'app' && client.id === this._appClient.id) {
+      // the app connection got closed - so terminate this cdt debugging session.
+      this.handleHostPluginUnloaded();
+    }
+  }
 
-    handleHostPluginUnloaded() {
-        this._plugin.setCDTClient(null);
-        this._appClient = null;
-        this._plugin = null;
-        this._socket.close();
-    }
+  handleHostPluginUnloaded() {
+    this._plugin.setCDTClient(null);
+    this._appClient = null;
+    this._plugin = null;
+    this._socket.close();
+  }
 
-    handleDisconnect() {
-        if (!this._appClient) {
-            return;
-        }
-        this._appClient.handlePluginCDTDisconnected(this._plugin.hostPlugInSessionId);
+  handleDisconnect() {
+    if (!this._appClient) {
+      return;
     }
+    this._appClient.handlePluginCDTDisconnected(this._plugin.hostPlugInSessionId);
+  }
 }
 
-module.exports = CDTClient;
+export default CDTClient;

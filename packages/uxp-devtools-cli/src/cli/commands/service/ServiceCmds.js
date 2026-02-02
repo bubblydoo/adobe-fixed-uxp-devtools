@@ -11,53 +11,53 @@
  *
  */
 
-const { CoreHelpers } = require("@adobe-fixed-uxp/uxp-devtools-core");
+import { CoreHelpers } from '@adobe-fixed-uxp/uxp-devtools-core';
 
 function handleServiceStartCommand(argv) {
-    // start the service at the given port.
-    const prom = this.app.server.isDevToolsEnabled();
-    const devToolsProm = prom.then((result) => {
-        if (!result) {
-            console.log("UXP Developer Tools is not enabled. uxp cli will try to run devtools `enable command` to enable it.");
-            return this.app.server.enableDevTools();
-        }
-        return result;
-    }).catch((err) => {
-        console.error(`Devtools enable command failed with ${err}`);
-        // silently eat the error so we can.
-        return false;
+  // start the service at the given port.
+  const prom = this.app.server.isDevToolsEnabled();
+  const devToolsProm = prom.then((result) => {
+    if (!result) {
+      console.log('UXP Developer Tools is not enabled. uxp cli will try to run devtools `enable command` to enable it.');
+      return this.app.server.enableDevTools();
+    }
+    return result;
+  }).catch((err) => {
+    console.error(`Devtools enable command failed with ${err}`);
+    // silently eat the error so we can.
+    return false;
+  });
+  return devToolsProm.then((result) => {
+    if (!result) {
+      console.log('UXP Developer workflow is not enabled. Please enable it before you start the cli service');
+      return false;
+    }
+    const { port } = argv;
+    return CoreHelpers.isPortAvailable(port).then((isAvailable) => {
+      if (!isAvailable) {
+        throw new Error(`The port ${port} is occupied. Please try another port or close the application which is using the port and try again.`);
+      }
+      return this.app.server.startServer(port);
     });
-    return devToolsProm.then((result) => {
-        if (!result) {
-            console.log("UXP Developer workflow is not enabled. Please enable it before you start the cli service");
-            return false;
-        }
-        const { port } = argv;
-        return CoreHelpers.isPortAvailable(port).then((isAvailable) => {
-            if (!isAvailable) {
-                throw new Error(`The port ${port} is occupied. Please try another port or close the application which is using the port and try again.`);
-            }
-            return this.app.server.startServer(port);
-        });
-    });
+  });
 }
 
 const startOptions = {
-    port: {
-        describe: "The port number for the uxp developer service",
-        type: "number",
-        default: 14001,
-    },
+  port: {
+    describe: 'The port number for the uxp developer service',
+    type: 'number',
+    default: 14001,
+  },
 };
 
 const startCommand = {
-    command: "start",
-    description: "Starts the UXP Developer service. If UXP Developer Tools support is not currently enabled, this command will also attempt to enable support.",
-    builder: startOptions,
-    handler: handleServiceStartCommand,
+  command: 'start',
+  description: 'Starts the UXP Developer service. If UXP Developer Tools support is not currently enabled, this command will also attempt to enable support.',
+  builder: startOptions,
+  handler: handleServiceStartCommand,
 };
 
 // export all service related commands here
-module.exports = {
-    startCommand,
+export {
+  startCommand,
 };

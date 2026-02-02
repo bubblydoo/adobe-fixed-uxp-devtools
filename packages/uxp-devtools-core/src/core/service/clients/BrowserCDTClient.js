@@ -11,8 +11,8 @@
  *
  */
 
-const Client = require("./Client");
-const chalk = require("chalk");
+import chalk from 'chalk';
+import Client from './Client.js';
 
 /*
 *   Browser CDT Client is there to support workflows like WebDriver / Puppeteer.
@@ -24,78 +24,78 @@ const chalk = require("chalk");
  */
 
 class BrowserCDTClient extends Client {
-    get type() {
-        return "browser_cdt_client";
-    }
+  get type() {
+    return 'browser_cdt_client';
+  }
 
-    static create(server, socket, url) {
-        // url is of form  "/socket/browser_cdt/?uxp-app-id=PS" hence added a baseURL
-        let cliUrl = new URL(url, "http://127.0.0.1:14001");
-        const searchParams = cliUrl.searchParams;
-        const uxpAppID = searchParams.get("adobe-uxp-app-id");
-        let browserCDTClient =  new BrowserCDTClient(server, socket, uxpAppID);
-        return browserCDTClient;
-    }
+  static create(server, socket, url) {
+    // url is of form  "/socket/browser_cdt/?uxp-app-id=PS" hence added a baseURL
+    const cliUrl = new URL(url, 'http://127.0.0.1:14001');
+    const searchParams = cliUrl.searchParams;
+    const uxpAppID = searchParams.get('adobe-uxp-app-id');
+    const browserCDTClient = new BrowserCDTClient(server, socket, uxpAppID);
+    return browserCDTClient;
+  }
 
-    _getSupportedAppClient(server, uxpAppID) {
-        let appClient = null;
-        server.clients.forEach((client) => {
-            if (client.type === "app" && client.appInfo.appId == uxpAppID) {
-                appClient = client;
-            }
-        });
-        return appClient;
-    }
+  _getSupportedAppClient(server, uxpAppID) {
+    let appClient = null;
+    server.clients.forEach((client) => {
+      if (client.type === 'app' && client.appInfo.appId == uxpAppID) {
+        appClient = client;
+      }
+    });
+    return appClient;
+  }
 
-    _handleBrowserCDTConnected() {
-        this._appClient.handleBrowserCDTConnected(this);
-    }
+  _handleBrowserCDTConnected() {
+    this._appClient.handleBrowserCDTConnected(this);
+  }
 
-    constructor(server, socket, uxpAppID) {
-        super(server, socket);
-        this.handlesRawMessages = true;
-        this.uxpAppID = uxpAppID;
-        this._appClient = this._getSupportedAppClient(server, uxpAppID);
-        if (!this._appClient) {
-            UxpLogger.error(chalk.red(`There is no valid app  or plugin session applicable for this CDT client.`));
-            return;
-        }
-        this._handleBrowserCDTConnected();
+  constructor(server, socket, uxpAppID) {
+    super(server, socket);
+    this.handlesRawMessages = true;
+    this.uxpAppID = uxpAppID;
+    this._appClient = this._getSupportedAppClient(server, uxpAppID);
+    if (!this._appClient) {
+      UxpLogger.error(chalk.red(`There is no valid app  or plugin session applicable for this CDT client.`));
+      return;
     }
+    this._handleBrowserCDTConnected();
+  }
 
-    handleClientRawMessage(rawCDTMessage) {
-        if (!this._appClient) {
-            this.send({
-                error: "There is no valid app or plugin session applicable for this CDT client.",
-            });
-            return;
-        }
-        this._appClient.sendBrowserCDTMessage(rawCDTMessage);
+  handleClientRawMessage(rawCDTMessage) {
+    if (!this._appClient) {
+      this.send({
+        error: 'There is no valid app or plugin session applicable for this CDT client.',
+      });
+      return;
     }
+    this._appClient.sendBrowserCDTMessage(rawCDTMessage);
+  }
 
-    on_clientDidDisconnect(client) {
-        // If the client is not yet ready, we will just skip it.
-        if (!this._appClient) {
-            return;
-        }
-        if (client.type === "app" && client.id === this._appClient.id) {
-            // the app connection got closed - so terminate this cdt debugging session.
-            this.handleHostPluginUnloaded();
-        }
+  on_clientDidDisconnect(client) {
+    // If the client is not yet ready, we will just skip it.
+    if (!this._appClient) {
+      return;
     }
+    if (client.type === 'app' && client.id === this._appClient.id) {
+      // the app connection got closed - so terminate this cdt debugging session.
+      this.handleHostPluginUnloaded();
+    }
+  }
 
-    handleHostPluginUnloaded() {
-        this._appClient = null;
-        this._socket.close();
-    }
+  handleHostPluginUnloaded() {
+    this._appClient = null;
+    this._socket.close();
+  }
 
-    handleDisconnect() {
-        if (!this._appClient) {
-            return;
-        }
-        this._appClient.handleBrowserCDTDisconnected(this);
-        super.handleDisconnect();
+  handleDisconnect() {
+    if (!this._appClient) {
+      return;
     }
+    this._appClient.handleBrowserCDTDisconnected(this);
+    super.handleDisconnect();
+  }
 }
 
-module.exports = BrowserCDTClient;
+export default BrowserCDTClient;

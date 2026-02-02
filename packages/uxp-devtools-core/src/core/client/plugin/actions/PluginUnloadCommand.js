@@ -1,5 +1,3 @@
-/* eslint-disable max-len */
-/* eslint-disable class-methods-use-this */
 /*
  *  Copyright 2020 Adobe Systems Incorporated. All rights reserved.
  *  This file is licensed to you under the Apache License, Version 2.0 (the "License");
@@ -13,37 +11,36 @@
  *
  */
 
-const PluginBaseCommand = require("./PluginBaseCommand");
+import PluginBaseCommand from './PluginBaseCommand.js';
 
 function createUnloadMessage(pluginSessionId) {
-    const msg = {
-        command: "Plugin",
-        action: "unload",
-        pluginSessionId,
-    };
-    return msg;
+  const msg = {
+    command: 'Plugin',
+    action: 'unload',
+    pluginSessionId,
+  };
+  return msg;
 }
 
 class PluginUnloadCommand extends PluginBaseCommand {
-    constructor(pluginMgr, params) {
-        super(pluginMgr);
-        this.params = params;
-    }
+  constructor(pluginMgr, params) {
+    super(pluginMgr);
+    this.params = params;
+  }
 
-    get name() {
-        return "Unload";
-    }
+  get name() {
+    return 'Unload';
+  }
 
-    validateParams() {
-        this.params = this.params || {};
-        this.params.apps = this.params.apps || [];
-        return Promise.resolve(true);
-    }
+  validateParams() {
+    this.params = this.params || {};
+    this.params.apps = this.params.apps || [];
+    return Promise.resolve(true);
+  }
 
-    executeCommand() {
-        return this.runCommandOnAllApplicableApps(createUnloadMessage);
-    }
+  executeCommand() {
+    return this.runCommandOnAllApplicableApps(createUnloadMessage);
+  }
 }
 
-
-module.exports = PluginUnloadCommand;
+export default PluginUnloadCommand;

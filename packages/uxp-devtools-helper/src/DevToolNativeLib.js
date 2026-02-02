@@ -9,9 +9,16 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const path = require("path");
+import { createRequire } from 'node:module';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const packageBaseFolder = path.resolve(__dirname, "..");
-const DevToolsNativeLib = require("node-gyp-build")(packageBaseFolder);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-module.exports = DevToolsNativeLib;
+const require = createRequire(import.meta.url);
+
+const packageBaseFolder = path.resolve(__dirname, '..');
+const DevToolsNativeLib = require('node-gyp-build')(packageBaseFolder);
+
+export default DevToolsNativeLib;

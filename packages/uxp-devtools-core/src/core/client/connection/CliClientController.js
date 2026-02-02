@@ -11,163 +11,163 @@
  *
  */
 
-const _ = require("lodash");
-const Connection = require("./Connection");
-const HostAppClient = require("./HostAppClient");
+import _ from 'lodash';
+import Connection from './Connection.js';
+import HostAppClient from './HostAppClient.js';
 
 function createDeferredPromise() {
-    const obj = {};
-    obj.promise = new Promise((resolve, reject) => {
-        obj.resolve = resolve;
-        obj.reject = reject;
-    });
-    return obj;
+  const obj = {};
+  obj.promise = new Promise((resolve, reject) => {
+    obj.resolve = resolve;
+    obj.reject = reject;
+  });
+  return obj;
 }
 
 class CliClientController {
-    constructor() {
-        this.appClients = [];
-    }
+  constructor() {
+    this.appClients = [];
+  }
 
-    registerAppConnectionsListener(listener) {
-        this._appConnectionListener = listener;
-    }
+  registerAppConnectionsListener(listener) {
+    this._appConnectionListener = listener;
+  }
 
-    registerPluginStateListener(listener) {
-        this._pluginStateListener = listener;
-    }
+  registerPluginStateListener(listener) {
+    this._pluginStateListener = listener;
+  }
 
-    registerHostAppLogListener(listener) {
-        this._hostAppLogListener = listener;
-    }
+  registerHostAppLogListener(listener) {
+    this._hostAppLogListener = listener;
+  }
 
-    onConnectionReady() {
-        UxpLogger.log(`Connected to UXP Developer Tool Service at port ${this._port}`);
-        if (this._callerPromise) {
-            if (this._connection) {
-                this._callerPromise.resolve();
-            }
-            else {
-                this._callerPromise.reject(new Error("Connection to service got terminated unexpectedly"));
-            }
-            this._callerPromise = null;
-        }
-        if (this._appConnectionListener) {
-            this._appConnectionListener("clientConnectionReady");
-        }
+  onConnectionReady() {
+    UxpLogger.log(`Connected to UXP Developer Tool Service at port ${this._port}`);
+    if (this._callerPromise) {
+      if (this._connection) {
+        this._callerPromise.resolve();
+      }
+      else {
+        this._callerPromise.reject(new Error('Connection to service got terminated unexpectedly'));
+      }
+      this._callerPromise = null;
     }
-
-    onConnectionError(err) {
-        if (this._callerPromise) {
-            if (err.code === "ECONNREFUSED") {
-                const errorMsg = "uxp cli service is not running. Start the cli service and try again.";
-                this._callerPromise.reject(new Error(errorMsg));
-            }
-            else {
-                this._callerPromise.reject(err);
-            }
-        }
+    if (this._appConnectionListener) {
+      this._appConnectionListener('clientConnectionReady');
     }
+  }
 
-    reset() {
-        this._callerPromise = null;
-        this.appClients = [];
-        if (this._connection) {
-            this._connection.removeAllListeners();
-            const connecion = this._connection;
-            this._connection = null;
-            connecion.terminate();
-        }
+  onConnectionError(err) {
+    if (this._callerPromise) {
+      if (err.code === 'ECONNREFUSED') {
+        const errorMsg = 'uxp cli service is not running. Start the cli service and try again.';
+        this._callerPromise.reject(new Error(errorMsg));
+      }
+      else {
+        this._callerPromise.reject(err);
+      }
     }
+  }
 
-    onConnectionClose() {
-        if (this._connection) {
-            // Looks like the cli service got disconnected abruptly.
-            this._connection.clearPendingCallbacks("Error: Connection to service got terminated unexpectedly");
-        }
-        this.reset();
-
-        if (this._appConnectionListener) {
-            this._appConnectionListener("clientConnectionClosed");
-        }
+  reset() {
+    this._callerPromise = null;
+    this.appClients = [];
+    if (this._connection) {
+      this._connection.removeAllListeners();
+      const connecion = this._connection;
+      this._connection = null;
+      connecion.terminate();
     }
+  }
 
-    _createConnection() {
-        this._connection = new Connection();
-        this._connection.on("ready", this.onConnectionReady.bind(this));
-        this._connection.on("error", this.onConnectionError.bind(this));
-        this._connection.on("close", this.onConnectionClose.bind(this));
+  onConnectionClose() {
+    if (this._connection) {
+      // Looks like the cli service got disconnected abruptly.
+      this._connection.clearPendingCallbacks('Error: Connection to service got terminated unexpectedly');
     }
+    this.reset();
 
-    _connectToServiceAtPort(port) {
-        this._createConnection();
-        this._port = port;
-        const url = `ws://127.0.0.1:${port}/socket/cli`;
-        this._callerPromise = createDeferredPromise();
-        this._connection.connect(this, url);
-        return this._callerPromise.promise;
+    if (this._appConnectionListener) {
+      this._appConnectionListener('clientConnectionClosed');
     }
+  }
 
-    connectToService(port) {
-        if (this._connection) {
-            return Promise.resolve();
-        }
-        return this._connectToServiceAtPort(port);
-    }
+  _createConnection() {
+    this._connection = new Connection();
+    this._connection.on('ready', this.onConnectionReady.bind(this));
+    this._connection.on('error', this.onConnectionError.bind(this));
+    this._connection.on('close', this.onConnectionClose.bind(this));
+  }
 
-    disconnect() {
-        this.reset();
-    }
+  _connectToServiceAtPort(port) {
+    this._createConnection();
+    this._port = port;
+    const url = `ws://127.0.0.1:${port}/socket/cli`;
+    this._callerPromise = createDeferredPromise();
+    this._connection.connect(this, url);
+    return this._callerPromise.promise;
+  }
 
-    sendMessageToAppWithReply(appEndPoint, message) {
-        if (!this._connection) {
-            return Promise.reject(new Error("Websocket Connection to Service is not valid. Reconnect and try again."));
-        }
-        const hostAppClient = this._getHostAppClient(appEndPoint);
-        if (!hostAppClient) {
-            return Promise.reject(new Error("cli controller - No such app is connected to send required message"));
-        }
-        return hostAppClient.sendMessageWithReply(this._connection, message);
+  connectToService(port) {
+    if (this._connection) {
+      return Promise.resolve();
     }
+    return this._connectToServiceAtPort(port);
+  }
 
-    addHostAppClient(data) {
-        const appClient = new HostAppClient(data);
-        this.appClients.push(appClient);
-        if (this._appConnectionListener) {
-            this._appConnectionListener("appConnected", data.app);
-        }
-    }
+  disconnect() {
+    this.reset();
+  }
 
-    removeHostAppClient(data) {
-        _.remove(this.appClients, (client) => client.id === data.id);
-        if (this._appConnectionListener) {
-            this._appConnectionListener("appDisconnected", data.app);
-        }
+  sendMessageToAppWithReply(appEndPoint, message) {
+    if (!this._connection) {
+      return Promise.reject(new Error('Websocket Connection to Service is not valid. Reconnect and try again.'));
     }
+    const hostAppClient = this._getHostAppClient(appEndPoint);
+    if (!hostAppClient) {
+      return Promise.reject(new Error('cli controller - No such app is connected to send required message'));
+    }
+    return hostAppClient.sendMessageWithReply(this._connection, message);
+  }
 
-    getConnectedApps() {
-        return this.appClients.map((client) => client.appEndPoint);
+  addHostAppClient(data) {
+    const appClient = new HostAppClient(data);
+    this.appClients.push(appClient);
+    if (this._appConnectionListener) {
+      this._appConnectionListener('appConnected', data.app);
     }
+  }
 
-    _getHostAppClient(appEndPoint) {
-        return _.find(this.appClients, (client) => _.isEqual(client.appEndPoint, appEndPoint));
+  removeHostAppClient(data) {
+    _.remove(this.appClients, client => client.id === data.id);
+    if (this._appConnectionListener) {
+      this._appConnectionListener('appDisconnected', data.app);
     }
+  }
 
-    handlePluginUnload(data) {
-        if (this._pluginStateListener) {
-            this._pluginStateListener("pluginUnloaded", data.plugin);
-        }
-    }
+  getConnectedApps() {
+    return this.appClients.map(client => client.appEndPoint);
+  }
 
-    handleHostAppLog(data) {
-        if (this._hostAppLogListener) {
-            this._hostAppLogListener("hostAppLog", data);
-        }
-    }
+  _getHostAppClient(appEndPoint) {
+    return _.find(this.appClients, client => _.isEqual(client.appEndPoint, appEndPoint));
+  }
 
-    get port() {
-        return this._port;
+  handlePluginUnload(data) {
+    if (this._pluginStateListener) {
+      this._pluginStateListener('pluginUnloaded', data.plugin);
     }
+  }
+
+  handleHostAppLog(data) {
+    if (this._hostAppLogListener) {
+      this._hostAppLogListener('hostAppLog', data);
+    }
+  }
+
+  get port() {
+    return this._port;
+  }
 }
 
-module.exports = CliClientController;
+export default CliClientController;

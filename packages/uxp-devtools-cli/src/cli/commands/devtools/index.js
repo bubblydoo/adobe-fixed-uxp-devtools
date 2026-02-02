@@ -1,4 +1,3 @@
-
 /*
  *  Copyright 2020 Adobe Systems Incorporated. All rights reserved.
  *  This file is licensed to you under the Apache License, Version 2.0 (the "License");
@@ -12,17 +11,17 @@
  *
  */
 
-const { enableCommand, disableCommand } = require("./DevToolsCmds");
+import { disableCommand, enableCommand } from './DevToolsCmds.js';
 
 function registerdevToolsubCommands(yargs) {
-    return yargs.command(enableCommand)
-        .command(disableCommand);
+  return yargs.command(enableCommand)
+    .command(disableCommand);
 }
 
 const devToolsCommand = {
-    command: "devtools <command>",
-    description: "Enable or disable UXP Developer Tool workflow",
-    builder: registerdevToolsubCommands,
+  command: 'devtools <command>',
+  description: 'Enable or disable UXP Developer Tool workflow',
+  builder: registerdevToolsubCommands,
 };
 
-module.exports = devToolsCommand;
+export default devToolsCommand;

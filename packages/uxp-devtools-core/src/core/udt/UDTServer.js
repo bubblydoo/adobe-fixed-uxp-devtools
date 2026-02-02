@@ -11,61 +11,61 @@
  *
  */
 
-const ServiceMgr = require("../service/ServiceMgr");
-const DevToolsMgr = require("../common/DevToolsMgr");
-const kill = require("../common/KillProcess");
+import DevToolsMgr from '../common/DevToolsMgr.js';
+import kill from '../common/KillProcess.js';
+import ServiceMgr from '../service/ServiceMgr.js';
 
 class UxpDevToolsServer {
-    constructor() {
-        this._serviceMgr = new ServiceMgr();
-        this._devToolsMgr = new DevToolsMgr(true);
-    }
+  constructor() {
+    this._serviceMgr = new ServiceMgr();
+    this._devToolsMgr = new DevToolsMgr(true);
+  }
 
-    enableDevTools(options = null) {
-        return this._devToolsMgr.enableDevTools(options);
-    }
+  enableDevTools(options = null) {
+    return this._devToolsMgr.enableDevTools(options);
+  }
 
-    disableDevTools(options = null) {
-        return this._devToolsMgr.disableDevTools(options).then(() => {
-            if(options.port) {
-                return kill(options.port, "tcp");
-            }
-        });
-    }
+  disableDevTools(options = null) {
+    return this._devToolsMgr.disableDevTools(options).then(() => {
+      if (options.port) {
+        return kill(options.port, 'tcp');
+      }
+    });
+  }
 
-    isServiceRunning() {
-        const result = { success: false };
-        return this._devToolsMgr.discoverServicePort().then((port) => {
-            result.success = true;
-            result.port = port;
-            return result;
-        }).catch(() => {
-            return result;
-        });
-    }
+  isServiceRunning() {
+    const result = { success: false };
+    return this._devToolsMgr.discoverServicePort().then((port) => {
+      result.success = true;
+      result.port = port;
+      return result;
+    }).catch(() => {
+      return result;
+    });
+  }
 
-    isDevToolsEnabled() {
-        return this._devToolsMgr.isDevToolsEnabled();
-    }
+  isDevToolsEnabled() {
+    return this._devToolsMgr.isDevToolsEnabled();
+  }
 
-    startServer(port) {
-        const prom = this._serviceMgr.start(port);
-        return prom.then(() => {
-            UxpLogger.log(`UXP Developer Service now running at port ${port}`);
-            // set the server port details - so that it can be discovered by
-            // clients via Vulcan Messages.
-            this.setServerDetails(port);
-            return true;
-        });
-    }
+  startServer(port) {
+    const prom = this._serviceMgr.start(port);
+    return prom.then(() => {
+      UxpLogger.log(`UXP Developer Service now running at port ${port}`);
+      // set the server port details - so that it can be discovered by
+      // clients via Vulcan Messages.
+      this.setServerDetails(port);
+      return true;
+    });
+  }
 
-    handleAppQuit() {
-        this._serviceMgr.handleAppQuit();
-    }
+  handleAppQuit() {
+    this._serviceMgr.handleAppQuit();
+  }
 
-    setServerDetails(port) {
-        this._devToolsMgr.setServerDetails(port);
-    }
+  setServerDetails(port) {
+    this._devToolsMgr.setServerDetails(port);
+  }
 }
 
-module.exports = UxpDevToolsServer;
+export default UxpDevToolsServer;

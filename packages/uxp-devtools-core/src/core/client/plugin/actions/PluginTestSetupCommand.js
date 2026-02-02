@@ -11,43 +11,40 @@
  *
  */
 
-
-const path = require("path");
-const chalk = require("chalk");
-const PluginTestBaseCommand = require("./PluginTestBaseCommand");
-
+import path from 'node:path';
+import chalk from 'chalk';
+import PluginTestBaseCommand from './PluginTestBaseCommand.js';
 
 class PluginTestCommand extends PluginTestBaseCommand {
-    constructor(pluginMgr, params) {
-        super(pluginMgr);
-        this.params = params;
-    }
+  constructor(pluginMgr, params) {
+    super(pluginMgr);
+    this.params = params;
+  }
 
-    get name() {
-        return "SetupTest";
-    }
+  get name() {
+    return 'SetupTest';
+  }
 
-    validateParams() {
-        if (!this.params) {
-            this.params = {
-                apps: [],
-            };
-        }
-        return Promise.resolve(true);
+  validateParams() {
+    if (!this.params) {
+      this.params = {
+        apps: [],
+      };
     }
+    return Promise.resolve(true);
+  }
 
-    executeCommand() {
-        const pluginFolder = path.dirname(this.params.manifest);
-        const packageName = this.params.packageName;
-        console.log(chalk.green("Setup uxp-plugin-tests files at"), chalk.yellow(process.cwd()));
-        const prom = this.initWithBundledTest(pluginFolder, packageName);
-        prom.then(() => {
-            this.installTestDependency();
-            return true;
-        }).catch(() => {
-            return false;
-        });
-    }
-
+  executeCommand() {
+    const pluginFolder = path.dirname(this.params.manifest);
+    const packageName = this.params.packageName;
+    console.log(chalk.green('Setup uxp-plugin-tests files at'), chalk.yellow(process.cwd()));
+    const prom = this.initWithBundledTest(pluginFolder, packageName);
+    prom.then(() => {
+      this.installTestDependency();
+      return true;
+    }).catch(() => {
+      return false;
+    });
+  }
 }
-module.exports = PluginTestCommand;
+export default PluginTestCommand;

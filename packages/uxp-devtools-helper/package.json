@@ -1,8 +1,10 @@
 {
   "name": "@adobe-fixed-uxp/uxp-devtools-helper",
+  "type": "module",
   "version": "1.5.1",
   "description": "Adobe Devtools helper package used by uxp cli",
-  "main": "src/DevToolsHelper.js",
+  "author": "Adobe Inc",
+  "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "git@github.com:adobe-uxp/devtools-cli.git",
@@ -12,12 +14,17 @@
     "adobe",
     "uxp"
   ],
-  "author": "Adobe Inc",
-  "license": "Apache-2.0",
+  "exports": {
+    ".": {
+      "import": "./src/DevToolsHelper.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "main": "src/DevToolsHelper.js",
   "dependencies": {
+    "@adobe-fixed-uxp/uxp-devtools-feature": "workspace:*",
     "fs-extra": "^9.0.0",
     "node-gyp-build": "^4.2.3",
-    "@adobe-fixed-uxp/uxp-devtools-feature": "^1.0.0",
     "tar": "^6.0.1"
   }
 }

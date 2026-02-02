@@ -1,3 +1,5 @@
+import CoreHelpers from './core/common/CoreHelpers.js';
+import DevToolsError from './core/common/DevToolsError.js';
 /*
  *  Copyright 2020 Adobe Systems Incorporated. All rights reserved.
  *  This file is licensed to you under the Apache License, Version 2.0 (the "License");
@@ -10,13 +12,11 @@
  *  governing permissions and limitations under the License.
  *
  */
-const UDTApplication = require("./core/udt/UDTApplication");
-const CoreHelpers = require("./core/common/CoreHelpers");
-const DevToolsError = require("./core/common/DevToolsError");
+import UDTApplication from './core/udt/UDTApplication.js';
 // export the main classes.
 // Other classes will be derived from this main class.
-module.exports = {
-    UDTApplication,
-    CoreHelpers,
-    DevToolsError
+export {
+  CoreHelpers,
+  DevToolsError,
+  UDTApplication,
 };

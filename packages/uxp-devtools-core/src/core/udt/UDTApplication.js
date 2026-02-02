@@ -1,5 +1,3 @@
-/* eslint-disable class-methods-use-this */
-/* eslint-disable global-require */
 /*
  *  Copyright 2020 Adobe Systems Incorporated. All rights reserved.
  *  This file is licensed to you under the Apache License, Version 2.0 (the "License");
@@ -13,62 +11,62 @@
  *
  */
 
-const Logger = require("../common/Logger");
+import Logger from '../common/Logger.js';
+import UxpDevtoolsClient from './UDTClient.js';
+import UxpDevtoolsServer from './UDTServer.js';
 
 const appState = {};
 
 function installGlobalLogger(logger) {
-    if (global.Logger) {
-        console.error("Global Logger is already initialized. This should not be the case");
-    }
-    global.UxpLogger = logger;
+  if (global.Logger) {
+    console.error('Global Logger is already initialized. This should not be the case');
+  }
+  global.UxpLogger = logger;
 }
 
 class UxpDevtoolsApplicationImpl {
-    constructor(initParams) {
-        appState.servicePort = initParams.servicePort;
-        let { logger } = initParams;
-        if (logger) {
-            Logger.setProvider(logger);
-        }
-        installGlobalLogger(Logger);
-        appState.hostDelegate = initParams.hostDelegate;
+  constructor(initParams) {
+    appState.servicePort = initParams.servicePort;
+    const { logger } = initParams;
+    if (logger) {
+      Logger.setProvider(logger);
     }
+    installGlobalLogger(Logger);
+    appState.hostDelegate = initParams.hostDelegate;
+  }
 
-    set logLevel(level) {
-        Logger.level = level;
-    }
+  set logLevel(level) {
+    Logger.level = level;
+  }
 
-    get client() {
-        if (!appState.client) {
-            const UxpDevtoolsClient = require("./UDTClient");
-            appState.client = new UxpDevtoolsClient(appState.servicePort);
-        }
-        return appState.client;
+  get client() {
+    if (!appState.client) {
+      appState.client = new UxpDevtoolsClient(appState.servicePort);
     }
+    return appState.client;
+  }
 
-    get server() {
-        if (!appState.server) {
-            const UxpDevtoolsServer = require("./UDTServer");
-            appState.server = new UxpDevtoolsServer();
-        }
-        return appState.server;
+  get server() {
+    if (!appState.server) {
+      appState.server = new UxpDevtoolsServer();
     }
+    return appState.server;
+  }
 }
 
 let sIntializerInstance = null;
 
 class UxpDevtoolsApplication {
-    static createInstance(initializerParams) {
-        if (sIntializerInstance) {
-            throw new Error("Devtools Initializer instance is already created!");
-        }
-        sIntializerInstance = new UxpDevtoolsApplicationImpl(initializerParams);
+  static createInstance(initializerParams) {
+    if (sIntializerInstance) {
+      throw new Error('Devtools Initializer instance is already created!');
     }
+    sIntializerInstance = new UxpDevtoolsApplicationImpl(initializerParams);
+  }
 
-    static instance() {
-        return sIntializerInstance;
-    }
+  static instance() {
+    return sIntializerInstance;
+  }
 }
 
-module.exports = UxpDevtoolsApplication;
+export default UxpDevtoolsApplication;

@@ -9,66 +9,66 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const { getUserFriendlyMessageFromCode, CoreErrorCodes } = require("./ErrorCodes");
+import { CoreErrorCodes, getUserFriendlyMessageFromCode } from './ErrorCodes.js';
 
 function DevToolsError(errorCode, details, message) {
-    this._message = message;
-    this._code = errorCode;
-    this._details = details;
-    if (Error.captureStackTrace) {
-        Error.captureStackTrace(this, DevToolsError);
+  this._message = message;
+  this._code = errorCode;
+  this._details = details;
+  if (Error.captureStackTrace) {
+    Error.captureStackTrace(this, DevToolsError);
+  }
+  else {
+    try {
+      throw new Error();
     }
-    else {
-        try {
-            throw new Error();
-        }
-        catch (e) {
-            this._stack = e.stack;
-        }
+    catch (e) {
+      this._stack = e.stack;
     }
+  }
 }
 
 DevToolsError.prototype = Object.create(Error.prototype);
 
 Object.defineProperties(DevToolsError.prototype, {
-    message: {
-        get() {
-            const msg = this._message;
-            if (msg) {
-                return msg;
-            }
-            const preMsg = getUserFriendlyMessageFromCode(this.code);
-            return preMsg || "";
-        }
+  message: {
+    get() {
+      const msg = this._message;
+      if (msg) {
+        return msg;
+      }
+      const preMsg = getUserFriendlyMessageFromCode(this.code);
+      return preMsg || '';
     },
-    name: {
-        get() {
-            return "DevToolsError";
-        }
+  },
+  name: {
+    get() {
+      return 'DevToolsError';
     },
-    code: {
-        get() {
-            return this._code;
-        }
+  },
+  code: {
+    get() {
+      return this._code;
     },
-    stack: {
-        get() {
-            return this._stack;
-        }
+  },
+  stack: {
+    get() {
+      return this._stack;
     },
-    details: {
-        get() {
-            return this._details;
-        }
+  },
+  details: {
+    get() {
+      return this._details;
     },
-    hasDetails: {
-        get() {
-            return !!this._details;
-        }
-    }
+  },
+  hasDetails: {
+    get() {
+      return !!this._details;
+    },
+  },
 });
 
 DevToolsError.ErrorCodes = CoreErrorCodes;
 DevToolsError.getUserFriendlyMessageFromCode = getUserFriendlyMessageFromCode;
 
-module.exports = DevToolsError;
+export default DevToolsError;

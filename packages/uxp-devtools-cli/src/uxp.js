@@ -1,4 +1,10 @@
 #!/usr/bin/env node
+import { UDTApplication } from '@adobe-fixed-uxp/uxp-devtools-core';
+import appsCommand from './cli/commands/apps/index.js';
+
+import devtoolsCommand from './cli/commands/devtools/index.js';
+import pluginCommand from './cli/commands/plugin/index.js';
+import serviceCommand from './cli/commands/service/index.js';
 /*
  *  Copyright 2020 Adobe Systems Incorporated. All rights reserved.
  *  This file is licensed to you under the Apache License, Version 2.0 (the "License");
@@ -11,28 +17,26 @@
  *  governing permissions and limitations under the License.
  *
  */
-/* eslint-disable global-require */
-const Tool = require("./cli/utils/Tool");
-const { UDTApplication } = require("@adobe-fixed-uxp/uxp-devtools-core");
+import Tool from './cli/utils/Tool.js';
 
 const commands = [
-    require("./cli/commands/apps/index"),
-    require("./cli/commands/devtools/index"),
-    require("./cli/commands/plugin/index"),
-    require("./cli/commands/service/index"),
-    // TODO(craj) - disabling init related command - webpack has some issues with this.
-    // require("./cli/commands/plugin/init"),
+  appsCommand,
+  devtoolsCommand,
+  pluginCommand,
+  serviceCommand,
+  // TODO(craj) - disabling init related command - webpack has some issues with this.
+  // require("./cli/commands/plugin/init"),
 ];
 
 class UxpDevtoolsCLI {
-    static run() {
-        const emptyInitParams = {};
-        UDTApplication.createInstance(emptyInitParams);
+  static run() {
+    const emptyInitParams = {};
+    UDTApplication.createInstance(emptyInitParams);
 
-        const args = process.argv.slice(2);
-        const tool = new Tool(commands);
-        tool.run(args);
-    }
+    const args = process.argv.slice(2);
+    const tool = new Tool(commands);
+    tool.run(args);
+  }
 }
 
 UxpDevtoolsCLI.run();

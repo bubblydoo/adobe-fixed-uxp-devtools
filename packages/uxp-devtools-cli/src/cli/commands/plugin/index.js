@@ -1,4 +1,3 @@
-/* eslint-disable max-len */
 /*
  *  Copyright 2020 Adobe Systems Incorporated. All rights reserved.
  *  This file is licensed to you under the Apache License, Version 2.0 (the "License");
@@ -12,29 +11,25 @@
  *
  */
 
-const loadCommand = require("./load");
-const debugCommand = require("./debug");
-const reloadCommand = require("./reload");
-const unloadCommand = require("./unload");
-const logCommand = require("./log");
-const initCommand = require("./init");
-const validateCommand = require("./validate");
-const packageCommand = require("./package");
-const watchCommand = require("./watch");
-const testCommand = require("./pluginTest");
-
+import debugCommand from './debug.js';
+import initCommand from './init.js';
+import loadCommand from './load.js';
+import logCommand from './log.js';
+import packageCommand from './package.js';
+import testCommand from './pluginTest.js';
+import reloadCommand from './reload.js';
+import unloadCommand from './unload.js';
+import validateCommand from './validate.js';
+import watchCommand from './watch.js';
 
 function registerPluginSubCommands(yargs) {
-    return yargs.command(loadCommand).command(debugCommand)
-        .command(reloadCommand).command(logCommand).command(initCommand)
-        .command(validateCommand).command(unloadCommand).command(watchCommand)
-        .command(packageCommand).command(testCommand);
+  return yargs.command(loadCommand).command(debugCommand).command(reloadCommand).command(logCommand).command(initCommand).command(validateCommand).command(unloadCommand).command(watchCommand).command(packageCommand).command(testCommand);
 }
 
 const PluginCommand = {
-    command: "plugin <command>",
-    description: "Load, reload, watch, debug, unload, test, package, validate plugins",
-    builder: registerPluginSubCommands,
+  command: 'plugin <command>',
+  description: 'Load, reload, watch, debug, unload, test, package, validate plugins',
+  builder: registerPluginSubCommands,
 };
 
-module.exports = PluginCommand;
+export default PluginCommand;

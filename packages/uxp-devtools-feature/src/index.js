@@ -1,5 +1,3 @@
-const FeatureFlag = require("./feature/FeatureFlag");
+import * as FeatureFlag from './feature/FeatureFlag.js';
 
-module.exports = {
-    FeatureFlag
-};
+export { FeatureFlag };

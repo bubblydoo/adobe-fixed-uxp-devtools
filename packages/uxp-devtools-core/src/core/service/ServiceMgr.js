@@ -11,36 +11,36 @@
  *
  */
 
-const Server = require("./Server");
-const { createDeferredPromise } = require("../helpers/CommonUtils");
+import { createDeferredPromise } from '../helpers/CommonUtils.js';
+import Server from './Server.js';
 
 class ServiceMgr {
-    onServerReady() {
-        this._serviceDeferredProm.resolve(true);
-    }
+  onServerReady() {
+    this._serviceDeferredProm.resolve(true);
+  }
 
-    start(port) {
-        if (!port) {
-            Promise.reject(new Error("Invalid port number. Service need a valid port number to start."));
-        }
-        this._serviceDeferredProm = createDeferredPromise();
-        try {
-            this._server = new Server(port);
-            const onServerReady = this.onServerReady.bind(this);
-            this._server.on("serverReady", onServerReady);
-            this._server.run();
-        }
-        catch (err) {
-            return Promise.reject(err);
-        }
-        return this._serviceDeferredProm.promise;
+  start(port) {
+    if (!port) {
+      Promise.reject(new Error('Invalid port number. Service need a valid port number to start.'));
     }
+    this._serviceDeferredProm = createDeferredPromise();
+    try {
+      this._server = new Server(port);
+      const onServerReady = this.onServerReady.bind(this);
+      this._server.on('serverReady', onServerReady);
+      this._server.run();
+    }
+    catch (err) {
+      return Promise.reject(err);
+    }
+    return this._serviceDeferredProm.promise;
+  }
 
-    handleAppQuit() {
-        if (this._server) {
-            this._server.broadcastEvent("UDTAppQuit");
-        }
+  handleAppQuit() {
+    if (this._server) {
+      this._server.broadcastEvent('UDTAppQuit');
     }
+  }
 }
 
-module.exports = ServiceMgr;
+export default ServiceMgr;

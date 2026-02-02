@@ -11,112 +11,109 @@
  *
  */
 
-const CliClientMgr = require("./connection/CliClientController");
-const PluginLoadCommand = require("./plugin/actions/PluginLoadCommand");
-const PluginDebugCommand = require("./plugin/actions/PluginDebugCommand");
-const PluginReloadCommand = require("./plugin/actions/PluginReloadCommand");
-const PluginLogCommand = require("./plugin/actions/PluginLogCommand");
-const PluginValidateCommand = require("./plugin/actions/PluginValidateCommand");
-const PluginUnloadCommand = require("./plugin/actions/PluginUnloadCommand");
-const PluginPackageCommand = require("./plugin/actions/PluginPackageCommand");
-const RefreshListCommand = require("./plugin/actions/RefreshListCommand");
-const PluginTestCommand = require("./plugin/actions/PluginTestCommand");
-const PluginTestSetupCommand = require("./plugin/actions/PluginTestSetupCommand");
+import CliClientMgr from './connection/CliClientController.js';
+import PluginDebugCommand from './plugin/actions/PluginDebugCommand.js';
+import PluginLoadCommand from './plugin/actions/PluginLoadCommand.js';
+import PluginLogCommand from './plugin/actions/PluginLogCommand.js';
+import PluginPackageCommand from './plugin/actions/PluginPackageCommand.js';
+import PluginReloadCommand from './plugin/actions/PluginReloadCommand.js';
+import PluginTestCommand from './plugin/actions/PluginTestCommand.js';
+import PluginTestSetupCommand from './plugin/actions/PluginTestSetupCommand.js';
+import PluginUnloadCommand from './plugin/actions/PluginUnloadCommand.js';
+import PluginValidateCommand from './plugin/actions/PluginValidateCommand.js';
+import RefreshListCommand from './plugin/actions/RefreshListCommand.js';
 
-
-const PluginSession = require("./plugin/PluginSession");
+import PluginSession from './plugin/PluginSession.js';
 
 class PluginMgr {
-    constructor() {
-        this._cliClientMgr = new CliClientMgr();
+  constructor() {
+    this._cliClientMgr = new CliClientMgr();
+  }
+
+  loadPlugin(params) {
+    const pluginLoadCommand = new PluginLoadCommand(this, params);
+    return pluginLoadCommand.execute();
+  }
+
+  registerAppConnectionsListener(listener) {
+    this._cliClientMgr.registerAppConnectionsListener(listener);
+  }
+
+  registerPluginStateListener(listener) {
+    this._cliClientMgr.registerPluginStateListener(listener);
+  }
+
+  registerHostAppLogListener(listener) {
+    this._cliClientMgr.registerHostAppLogListener(listener);
+  }
+
+  refreshList() {
+    const refreshListCommand = new RefreshListCommand(this);
+    return refreshListCommand.execute();
+  }
+
+  debugPlugin(pluginSession, params) {
+    const debugCommand = new PluginDebugCommand(this, params);
+    debugCommand.pluginSession = pluginSession;
+    return debugCommand.execute();
+  }
+
+  unloadPlugin(pluginSession, params) {
+    const unloadCommand = new PluginUnloadCommand(this, params);
+    unloadCommand.pluginSession = pluginSession;
+    return unloadCommand.execute();
+  }
+
+  reloadPlugin(pluginSession, params) {
+    const reloadCommand = new PluginReloadCommand(this, params);
+    reloadCommand.pluginSession = pluginSession;
+    return reloadCommand.execute();
+  }
+
+  executePluginTest(pluginSession, params) {
+    const pluginTestCommand = new PluginTestCommand(this, params);
+    pluginTestCommand.pluginSession = pluginSession;
+    return pluginTestCommand.execute();
+  }
+
+  setupPluginTest(params) {
+    const pluginTestSetupCommand = new PluginTestSetupCommand(this, params);
+    return pluginTestSetupCommand.execute();
+  }
+
+  validatePluginManifest(params) {
+    const pluginValidateCommand = new PluginValidateCommand(this, params);
+    return pluginValidateCommand.execute();
+  }
+
+  packagePlugin(params) {
+    const pluginPackageCommand = new PluginPackageCommand(this, params);
+    return pluginPackageCommand.execute();
+  }
+
+  getPluginLogPath(params) {
+    const pluginLogCommand = new PluginLogCommand(this, params);
+    return pluginLogCommand.execute();
+  }
+
+  getPluginSession() {
+    if (!this._pluginSession) {
+      this._pluginSession = PluginSession.createFromRcFile();
     }
+    return this._pluginSession;
+  }
 
-    loadPlugin(params) {
-        const pluginLoadCommand = new PluginLoadCommand(this, params);
-        return pluginLoadCommand.execute();
-    }
+  getConnectedApps() {
+    return this._cliClientMgr.getConnectedApps();
+  }
 
-    registerAppConnectionsListener(listener) {
-        this._cliClientMgr.registerAppConnectionsListener(listener);
-    }
+  connectToService(port) {
+    return this._cliClientMgr.connectToService(port);
+  }
 
-    registerPluginStateListener(listener) {
-        this._cliClientMgr.registerPluginStateListener(listener);
-    }
-
-    registerHostAppLogListener(listener) {
-        this._cliClientMgr.registerHostAppLogListener(listener);
-    }
-
-    refreshList() {
-        const refreshListCommand = new RefreshListCommand(this);
-        return refreshListCommand.execute();
-    }
-
-    debugPlugin(pluginSession, params) {
-        const debugCommand = new PluginDebugCommand(this, params);
-        debugCommand.pluginSession = pluginSession;
-        return debugCommand.execute();
-    }
-
-    unloadPlugin(pluginSession, params) {
-        const unloadCommand = new PluginUnloadCommand(this, params);
-        unloadCommand.pluginSession = pluginSession;
-        return unloadCommand.execute();
-    }
-
-
-    reloadPlugin(pluginSession, params) {
-        const reloadCommand = new PluginReloadCommand(this, params);
-        reloadCommand.pluginSession = pluginSession;
-        return reloadCommand.execute();
-    }
-
-    executePluginTest(pluginSession, params) {
-        const pluginTestCommand = new PluginTestCommand(this, params);
-        pluginTestCommand.pluginSession = pluginSession;
-        return pluginTestCommand.execute();
-    }
-
-    setupPluginTest(params) {
-        const pluginTestSetupCommand = new PluginTestSetupCommand(this, params);
-        return pluginTestSetupCommand.execute();
-
-    }
-
-    validatePluginManifest(params) {
-        const pluginValidateCommand = new PluginValidateCommand(this, params);
-        return pluginValidateCommand.execute();
-    }
-
-    packagePlugin(params) {
-        const pluginPackageCommand = new PluginPackageCommand(this, params);
-        return pluginPackageCommand.execute();
-    }
-
-    getPluginLogPath(params) {
-        const pluginLogCommand = new PluginLogCommand(this, params);
-        return pluginLogCommand.execute();
-    }
-
-    getPluginSession() {
-        if (!this._pluginSession) {
-            this._pluginSession = PluginSession.createFromRcFile();
-        }
-        return this._pluginSession;
-    }
-
-    getConnectedApps() {
-        return this._cliClientMgr.getConnectedApps();
-    }
-
-    connectToService(port) {
-        return this._cliClientMgr.connectToService(port);
-    }
-
-    disconnect() {
-        return this._cliClientMgr.disconnect();
-    }
+  disconnect() {
+    return this._cliClientMgr.disconnect();
+  }
 }
 
-module.exports = PluginMgr;
+export default PluginMgr;

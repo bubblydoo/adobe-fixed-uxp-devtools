@@ -10,73 +10,73 @@
  *  governing permissions and limitations under the License.
  *
  */
-const semver = require("semver");
+
+import semver from 'semver';
+
 const pluginName = {
-    type: "text",
-    name: "name",
-    message: "Plugin Name",
-    validate: (value) => (!!value),
+  type: 'text',
+  name: 'name',
+  message: 'Plugin Name',
+  validate: value => (!!value),
 };
 
 const pluginVersion = {
-    type: "text",
-    name: "version",
-    message: "Plugin Version",
+  type: 'text',
+  name: 'version',
+  message: 'Plugin Version',
 };
 
 const pluginId = {
-    type: "text",
-    name: "id",
-    message: "Plugin Id ?",
-    validate: (value) => (!!value),
+  type: 'text',
+  name: 'id',
+  message: 'Plugin Id ?',
+  validate: value => (!!value),
 };
 
 const host = {
-    type: "multiselect",
-    name: "host",
-    message: "Host Application?",
-    choices: [
-        { title: "Photoshop", value: "PS" },
-        { title: "Adobe XD", value: "XD" },
-    ],
-    min: 1,
+  type: 'multiselect',
+  name: 'host',
+  message: 'Host Application?',
+  choices: [
+    { title: 'Photoshop', value: 'PS' },
+    { title: 'Adobe XD', value: 'XD' },
+  ],
+  min: 1,
 };
 
-
 const psVersion = {
-    type: (prev, values) => {
-        const appList = values.host;
-        if (Array.isArray(appList) && appList.includes("PS")) {
-            return "text";
-        }
-        return null;
-    },
-    name: "psversion",
-    message: "PhotoShop Version",
-    validate: value => (semver.valid(value)) ? true : `Please specify valid minVersion in x.y.z format`
+  type: (prev, values) => {
+    const appList = values.host;
+    if (Array.isArray(appList) && appList.includes('PS')) {
+      return 'text';
+    }
+    return null;
+  },
+  name: 'psversion',
+  message: 'PhotoShop Version',
+  validate: value => (semver.valid(value)) ? true : `Please specify valid minVersion in x.y.z format`,
 };
 
 const xdVersion = {
-    type: (prev, values) => {
-        const appList = values.host;
-        if (Array.isArray(appList) && appList.includes("XD")) {
-            return "text";
-        }
-        return null;
-    },
-    name: "xdversion",
-    message: "Adobe XD Version",
-    validate: (value) => (semver.valid(value)) ? true : `Please specify valid minVersion in x.y.z format`
+  type: (prev, values) => {
+    const appList = values.host;
+    if (Array.isArray(appList) && appList.includes('XD')) {
+      return 'text';
+    }
+    return null;
+  },
+  name: 'xdversion',
+  message: 'Adobe XD Version',
+  validate: value => (semver.valid(value)) ? true : `Please specify valid minVersion in x.y.z format`,
 };
 
-
 const questions = [
-    pluginName,
-    pluginVersion,
-    pluginId,
-    host,
-    psVersion,
-    xdVersion,
+  pluginName,
+  pluginVersion,
+  pluginId,
+  host,
+  psVersion,
+  xdVersion,
 ];
 
-module.exports = questions;
+export default questions;

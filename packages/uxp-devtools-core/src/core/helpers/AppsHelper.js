@@ -11,82 +11,82 @@
  *
  */
 
-const _ = require("lodash");
-const DevToolsError = require("../common/DevToolsError");
+import _ from 'lodash';
+import DevToolsError from '../common/DevToolsError.js';
 
 class AppEndPoint {
-    static fromIdVer(appIdVer) {
-        const vals = appIdVer.split("@");
-        const id = vals[0];
-        const version = vals.length > 1 ? vals[1] : undefined;
-        return {
-            id,
-            version,
-        };
-    }
+  static fromIdVer(appIdVer) {
+    const vals = appIdVer.split('@');
+    const id = vals[0];
+    const version = vals.length > 1 ? vals[1] : undefined;
+    return {
+      id,
+      version,
+    };
+  }
 
-    // this method assumes that we have a valid manifest json.
-    static fromManifest(manifest) {
-        let hostArray = manifest.host;
-        if (!Array.isArray(hostArray)) {
-            hostArray = [ hostArray ];
-        }
-        const hostAppIds = hostArray.map((host) => host.app);
-        return hostAppIds.map(AppEndPoint.fromIdVer);
+  // this method assumes that we have a valid manifest json.
+  static fromManifest(manifest) {
+    let hostArray = manifest.host;
+    if (!Array.isArray(hostArray)) {
+      hostArray = [hostArray];
     }
+    const hostAppIds = hostArray.map(host => host.app);
+    return hostAppIds.map(AppEndPoint.fromIdVer);
+  }
 
-    static isSame(base, other) {
-        if (base.id === other.id) {
-            if (base.version && other.version) {
-                // both version are present - so compare
-                return base.version === other.version;
-            }
-            return true;
-        }
-        return false;
+  static isSame(base, other) {
+    if (base.id === other.id) {
+      if (base.version && other.version) {
+        // both version are present - so compare
+        return base.version === other.version;
+      }
+      return true;
     }
+    return false;
+  }
 }
 
 class AppsHelper {
-    static filterApplicableAppsFromList(appsFullList, pluginApplicableApps) {
-        const applicableApps = _.filter(appsFullList, (cep) => {
-            const obj = _.find(pluginApplicableApps, (pae) => AppEndPoint.isSame(pae, cep));
-            return !!obj;
-        });
+  static filterApplicableAppsFromList(appsFullList, pluginApplicableApps) {
+    const applicableApps = _.filter(appsFullList, (cep) => {
+      const obj = _.find(pluginApplicableApps, pae => AppEndPoint.isSame(pae, cep));
+      return !!obj;
+    });
 
-        return applicableApps;
+    return applicableApps;
+  }
+
+  static getApplicableAppsFromInput(appsFullList, appIdsRawInput) {
+    // find intersection of apps from input and manifest
+    const inputAppEndPoints = appIdsRawInput.map(AppEndPoint.fromIdVer);
+    return AppsHelper.filterApplicableAppsFromList(inputAppEndPoints, appsFullList);
+  }
+
+  // get the list of apps which are applicable for this plugin based
+  // on combination of supported App id present in manifest json
+  // and apps list provided by user as parameter to the command.
+  static getApplicableAppsForPlugin(manifest, appIdsRawInput) {
+    const manifestAppList = AppEndPoint.fromManifest(manifest);
+    if (!appIdsRawInput.length) {
+      // no input apps so just return all the apps present in the manifest as applicable apps.
+      return manifestAppList;
+    }
+    return AppsHelper.getApplicableAppsFromInput(manifestAppList, appIdsRawInput);
+  }
+
+  // filter list the connected apps which are applicable for plugin to load into
+  // based on plugins' app applicable list.
+  static filterConnectedAppsForPlugin(connectedApps, pluginApplicableApps) {
+    if (!pluginApplicableApps.length) {
+      throw new DevToolsError(DevToolsError.ErrorCodes.PLUGIN_NO_APPLICABLE_APPS);
+    }
+    if (!connectedApps.length) {
+      throw new DevToolsError(DevToolsError.ErrorCodes.NO_APPS_CONNECTED_TO_SERVICE);
     }
 
-    static getApplicableAppsFromInput(appsFullList, appIdsRawInput) {
-        // find intersection of apps from input and manifest
-        const inputAppEndPoints = appIdsRawInput.map(AppEndPoint.fromIdVer);
-        return AppsHelper.filterApplicableAppsFromList(inputAppEndPoints, appsFullList);
-    }
-
-    // get the list of apps which are applicable for this plugin based
-    // on combination of supported App id present in manifest json
-    // and apps list provided by user as parameter to the command.
-    static getApplicableAppsForPlugin(manifest, appIdsRawInput) {
-        const manifestAppList = AppEndPoint.fromManifest(manifest);
-        if (!appIdsRawInput.length) {
-            // no input apps so just return all the apps present in the manifest as applicable apps.
-            return manifestAppList;
-        }
-        return AppsHelper.getApplicableAppsFromInput(manifestAppList, appIdsRawInput);
-    }
-
-    // filter list the connected apps which are applicable for plugin to load into
-    // based on plugins' app applicable list.
-    static filterConnectedAppsForPlugin(connectedApps, pluginApplicableApps) {
-        if (!pluginApplicableApps.length) {
-            throw new DevToolsError(DevToolsError.ErrorCodes.PLUGIN_NO_APPLICABLE_APPS);
-        }
-        if (!connectedApps.length) {
-            throw new DevToolsError(DevToolsError.ErrorCodes.NO_APPS_CONNECTED_TO_SERVICE);
-        }
-
-        return AppsHelper.filterApplicableAppsFromList(connectedApps, pluginApplicableApps);
-    }
+    return AppsHelper.filterApplicableAppsFromList(connectedApps, pluginApplicableApps);
+  }
 }
 
-module.exports = AppsHelper;
+export default AppsHelper;

@@ -11,41 +11,41 @@
  *
  */
 
-const Table = require("cli-table3");
-const { CoreHelpers } = require("@adobe-fixed-uxp/uxp-devtools-core");
+import { CoreHelpers } from '@adobe-fixed-uxp/uxp-devtools-core';
+import Table from 'cli-table3';
 
 function handleAppsListCommand() {
-    this.app.logLevel = CoreHelpers.LoggerLevel.WARN;
-    const prom = this.app.client.executePluginCommand("connectedApps");
-    return prom.then((appsList) => {
-        if (!appsList || !appsList.length) {
-            console.warn("No Host apps are currently connected to uxp devtools cli service");
-            console.warn("Please make sure that you have launched an application that supports UXP Developer Tools and try again.");
-            return null;
-        }
+  this.app.logLevel = CoreHelpers.LoggerLevel.WARN;
+  const prom = this.app.client.executePluginCommand('connectedApps');
+  return prom.then((appsList) => {
+    if (!appsList || !appsList.length) {
+      console.warn('No Host apps are currently connected to uxp devtools cli service');
+      console.warn('Please make sure that you have launched an application that supports UXP Developer Tools and try again.');
+      return null;
+    }
 
-        const tableOptions = {
-            head: [ "ID", "Version", "Name" ],
-            style: { head: [ "green" ] },
-            wordWrap: true,
-        };
-        const table = new Table(tableOptions);
-        appsList.forEach((app) => {
-            table.push([ app.id, app.version, app.name ]);
-        });
-
-        console.log("List of Host Apps currently connected to UXP devtools cli service");
-        console.log(table.toString());
-        return appsList;
+    const tableOptions = {
+      head: ['ID', 'Version', 'Name'],
+      style: { head: ['green'] },
+      wordWrap: true,
+    };
+    const table = new Table(tableOptions);
+    appsList.forEach((app) => {
+      table.push([app.id, app.version, app.name]);
     });
+
+    console.log('List of Host Apps currently connected to UXP devtools cli service');
+    console.log(table.toString());
+    return appsList;
+  });
 }
 
 const appsListCommand = {
-    command: "list",
-    description: "List Applications that are currently connected to the uxp devtools cli service.",
-    handler: handleAppsListCommand,
+  command: 'list',
+  description: 'List Applications that are currently connected to the uxp devtools cli service.',
+  handler: handleAppsListCommand,
 };
 
-module.exports = {
-    appsListCommand,
+export {
+  appsListCommand,
 };

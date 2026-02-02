@@ -1,4 +1,3 @@
-
 /*
  *  Copyright 2020 Adobe Systems Incorporated. All rights reserved.
  *  This file is licensed to you under the Apache License, Version 2.0 (the "License");
@@ -12,16 +11,16 @@
  *
  */
 
-const { startCommand } = require("./ServiceCmds");
+import { startCommand } from './ServiceCmds.js';
 
 function registerServiceSubCommands(yargs) {
-    return yargs.command(startCommand);
+  return yargs.command(startCommand);
 }
 
 const serviceCommand = {
-    command: "service <command>",
-    description: "Start and stop the UXP Developer service",
-    builder: registerServiceSubCommands,
+  command: 'service <command>',
+  description: 'Start and stop the UXP Developer service',
+  builder: registerServiceSubCommands,
 };
 
-module.exports = serviceCommand;
+export default serviceCommand;

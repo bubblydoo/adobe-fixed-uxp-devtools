@@ -1,5 +1,3 @@
-/* eslint-disable max-len */
-/* eslint-disable class-methods-use-this */
 /*
  *  Copyright 2020 Adobe Systems Incorporated. All rights reserved.
  *  This file is licensed to you under the Apache License, Version 2.0 (the "License");
@@ -13,24 +11,23 @@
  *
  */
 
-const PluginBaseCommand = require("./PluginBaseCommand");
+import PluginBaseCommand from './PluginBaseCommand.js';
 
 class PluginLogCommand extends PluginBaseCommand {
-    constructor(pluginMgr, params) {
-        super(pluginMgr);
-        this.params = params;
-    }
+  constructor(pluginMgr, params) {
+    super(pluginMgr);
+    this.params = params;
+  }
 
-    validateParams() {
-        this.params = this.params || {};
-        this.params.apps = this.params.apps || [];
-        return Promise.resolve(true);
-    }
+  validateParams() {
+    this.params = this.params || {};
+    this.params.apps = this.params.apps || [];
+    return Promise.resolve(true);
+  }
 
-    executeCommand() {
-        throw new Error("Plugin log command is currently not implemented!");
-    }
+  executeCommand() {
+    throw new Error('Plugin log command is currently not implemented!');
+  }
 }
 
-
-module.exports = PluginLogCommand;
+export default PluginLogCommand;

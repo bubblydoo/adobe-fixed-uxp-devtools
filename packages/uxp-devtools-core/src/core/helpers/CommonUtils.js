@@ -12,14 +12,14 @@
  */
 
 function createDeferredPromise() {
-    const obj = {};
-    obj.promise = new Promise((resolve, reject) => {
-        obj.resolve = resolve;
-        obj.reject = reject;
-    });
-    return obj;
+  const obj = {};
+  obj.promise = new Promise((resolve, reject) => {
+    obj.resolve = resolve;
+    obj.reject = reject;
+  });
+  return obj;
 }
 
-module.exports = {
-    createDeferredPromise,
+export {
+  createDeferredPromise,
 };

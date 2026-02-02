@@ -1,5 +1,3 @@
-/* eslint-disable class-methods-use-this */
-/* eslint-disable no-unused-vars */
 /*
  *  Copyright 2020 Adobe Systems Incorporated. All rights reserved.
  *  This file is licensed to you under the Apache License, Version 2.0 (the "License");
@@ -20,4 +18,4 @@ class UxpDevtoolsHostDelegate {
 
 }
 
-module.exports = UxpDevtoolsHostDelegate;
+export default UxpDevtoolsHostDelegate;

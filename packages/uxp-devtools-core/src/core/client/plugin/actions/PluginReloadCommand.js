@@ -1,5 +1,3 @@
-/* eslint-disable max-len */
-/* eslint-disable class-methods-use-this */
 /*
  *  Copyright 2020 Adobe Systems Incorporated. All rights reserved.
  *  This file is licensed to you under the Apache License, Version 2.0 (the "License");
@@ -13,50 +11,49 @@
  *
  */
 
-const PluginBaseCommand = require("./PluginBaseCommand");
+import PluginBaseCommand from './PluginBaseCommand.js';
 
 function createReloadMessage(pluginSessionId) {
-    const msg = {
-        command: "Plugin",
-        action: "reload",
-        pluginSessionId,
-    };
-    return msg;
+  const msg = {
+    command: 'Plugin',
+    action: 'reload',
+    pluginSessionId,
+  };
+  return msg;
 }
 
 class PluginReloadCommand extends PluginBaseCommand {
-    constructor(pluginMgr, params) {
-        super(pluginMgr);
-        this.params = params;
-    }
+  constructor(pluginMgr, params) {
+    super(pluginMgr);
+    this.params = params;
+  }
 
-    get name() {
-        return "Reload";
-    }
+  get name() {
+    return 'Reload';
+  }
 
-    validateParams() {
-        if (!this.params) {
-            this.params = {
-                apps: [],
-            };
-        }
-        return Promise.resolve(true);
+  validateParams() {
+    if (!this.params) {
+      this.params = {
+        apps: [],
+      };
     }
+    return Promise.resolve(true);
+  }
 
-    executeCommand() {
-        const resultsCallback = this._handlePluginReloadResult.bind(this);
-        return this.runCommandOnAllApplicableApps(createReloadMessage, resultsCallback);
-    }
+  executeCommand() {
+    const resultsCallback = this._handlePluginReloadResult.bind(this);
+    return this.runCommandOnAllApplicableApps(createReloadMessage, resultsCallback);
+  }
 
-    breakOnStartEnabled(result) {
-        const { data } = result;
-        return data && data.breakOnStart;
-    }
+  breakOnStartEnabled(result) {
+    const { data } = result;
+    return data && data.breakOnStart;
+  }
 
-    _handlePluginReloadResult() {
-        return true;
-    }
+  _handlePluginReloadResult() {
+    return true;
+  }
 }
 
-
-module.exports = PluginReloadCommand;
+export default PluginReloadCommand;

@@ -11,31 +11,30 @@
  *
  */
 
-
-const debugCommand = require("./debug");
+import debugCommand from './debug.js';
 
 // we are going to leverage the debug command for Logs commnad -
 // Logs command is supposed to launch the CDT Inspect with only Console Tab in it.
 // Debug command internally takes this option to handle the console case.
 
 function handlePluginLogsCommand(args) {
-    // set the forConsole to true - so that we show only the Console Tab in the CDT Inspect for Logs.
-    args.forConsole = true;
-    return debugCommand.handler(args);
+  // set the forConsole to true - so that we show only the Console Tab in the CDT Inspect for Logs.
+  args.forConsole = true;
+  return debugCommand.handler(args);
 }
 
 const logOptions = {
-    apps: {
-        describe: "If you plugin is loaded in multiple apps, you can use this option to limit the Apps this command will run on.",
-        type: "string",
-    },
+  apps: {
+    describe: 'If you plugin is loaded in multiple apps, you can use this option to limit the Apps this command will run on.',
+    type: 'string',
+  },
 };
 
 const logCommand = {
-    command: "logs",
-    description: "Show Plugin Logs Window",
-    handler: handlePluginLogsCommand,
-    builder: logOptions,
+  command: 'logs',
+  description: 'Show Plugin Logs Window',
+  handler: handlePluginLogsCommand,
+  builder: logOptions,
 };
 
-module.exports = logCommand;
+export default logCommand;

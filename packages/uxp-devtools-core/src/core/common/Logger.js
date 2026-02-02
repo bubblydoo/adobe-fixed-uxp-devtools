@@ -1,5 +1,3 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable class-methods-use-this */
 /*
  *  Copyright 2020 Adobe Systems Incorporated. All rights reserved.
  *  This file is licensed to you under the Apache License, Version 2.0 (the "License");
@@ -13,57 +11,56 @@
  *
  */
 
-const { LoggerLevel } = require("./Utils");
+import { LoggerLevel } from './Utils.js';
 
 class Logger {
-    constructor() {
-        this._level = LoggerLevel.DEFAULT;
-        this.init();
-    }
+  constructor() {
+    this._level = LoggerLevel.DEFAULT;
+    this.init();
+  }
 
-    init()  {
-        const methods = [ {
-            name: "error",
-            level: LoggerLevel.ERROR
-        },{
-            name: "warn",
-            level: LoggerLevel.WARN
-        },{
-            name: "log",
-            level: LoggerLevel.INFO
-        },{
-            name: "verbose",
-            level: LoggerLevel.VERBOSE
-        } ];
+  init() {
+    const methods = [{
+      name: 'error',
+      level: LoggerLevel.ERROR,
+    }, {
+      name: 'warn',
+      level: LoggerLevel.WARN,
+    }, {
+      name: 'log',
+      level: LoggerLevel.INFO,
+    }, {
+      name: 'verbose',
+      level: LoggerLevel.VERBOSE,
+    }];
 
-        for (let i = 0; i < methods.length; ++i) {
-            const method = methods[i];
-            this[method.name] = function(msg) {
-                if (this._provider) {
-                    this._provider[method.name](msg);
-                    return;
-                }
-                if (this._level < method.level) {
-                    return; // log-level severity is more so ignore.
-                }
-                const consoleMethodName = method.name == "verbose" ? "log" : method.name;
-                console[consoleMethodName](msg);
-            };
+    for (let i = 0; i < methods.length; ++i) {
+      const method = methods[i];
+      this[method.name] = function (msg) {
+        if (this._provider) {
+          this._provider[method.name](msg);
+          return;
         }
+        if (this._level < method.level) {
+          return; // log-level severity is more so ignore.
+        }
+        const consoleMethodName = method.name == 'verbose' ? 'log' : method.name;
+        console[consoleMethodName](msg);
+      };
     }
+  }
 
-    get level() {
-        return this._level;
-    }
+  get level() {
+    return this._level;
+  }
 
-    setProvider(provider) {
-        this._provider = provider;
-    }
+  setProvider(provider) {
+    this._provider = provider;
+  }
 
-    set level(level) {
-        this._level = level;
-    }
+  set level(level) {
+    this._level = level;
+  }
 }
 
-
-module.exports = new Logger();
+export default new Logger();

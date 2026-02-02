@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 /*
  *  Copyright 2020 Adobe Systems Incorporated. All rights reserved.
  *  This file is licensed to you under the Apache License, Version 2.0 (the "License");
@@ -12,67 +11,66 @@
  *
  */
 
-const Client = require("./Client");
+import Client from './Client.js';
 
 class UxpCliClient extends Client {
-    // eslint-disable-next-line class-methods-use-this
-    get type() {
-        return "cli";
-    }
+  get type() {
+    return 'cli';
+  }
 
-    // This is sent when the app client socket identifies itself.
-    on_didAddRuntimeClient(client) {
-        this._sendInitClientMessage(client);
-    }
+  // This is sent when the app client socket identifies itself.
+  on_didAddRuntimeClient(client) {
+    this._sendInitClientMessage(client);
+  }
 
-    on_clientDidConnect(client) {
-        // If the client is not yet ready, we will just skip it.
-        if (client.type === "app" && client.isInitialized) {
-            this._sendInitClientMessage(client);
-        }
+  on_clientDidConnect(client) {
+    // If the client is not yet ready, we will just skip it.
+    if (client.type === 'app' && client.isInitialized) {
+      this._sendInitClientMessage(client);
     }
+  }
 
-    on_completedConnection() {
-        // server has established connection with client - send this final notification to client.
-        // client by now will have details of other clients with it -
-        // so it can use this event to resume its work on the connected clients.
-        this.send({
-            command: "didCompleteConnection",
-        });
-    }
+  on_completedConnection() {
+    // server has established connection with client - send this final notification to client.
+    // client by now will have details of other clients with it -
+    // so it can use this event to resume its work on the connected clients.
+    this.send({
+      command: 'didCompleteConnection',
+    });
+  }
 
-    _sendInitClientMessage(client) {
-        this.send({
-            command: "didAddRuntimeClient",
-            id: client.id,
-            platform: client.platform,
-            app: client.appInfo,
-        });
-    }
+  _sendInitClientMessage(client) {
+    this.send({
+      command: 'didAddRuntimeClient',
+      id: client.id,
+      platform: client.platform,
+      app: client.appInfo,
+    });
+  }
 
-    on_didPluginUnloaded(data) {
-        this.send({
-            command: "didPluginUnloaded",
-            plugin: data
-        });
-    }
+  on_didPluginUnloaded(data) {
+    this.send({
+      command: 'didPluginUnloaded',
+      plugin: data,
+    });
+  }
 
-    on_hostAppLog(data) {
-        this.send({
-            command: "hostAppLog",
-            details: data
-        });
-    }
+  on_hostAppLog(data) {
+    this.send({
+      command: 'hostAppLog',
+      details: data,
+    });
+  }
 
-    on_clientDidDisconnect(client) {
-        if (client.type === "app" && client.isInitialized) {
-            this.send({
-                command: "didRemoveRuntimeClient",
-                id: client.id,
-                app: client.appInfo,
-            });
-        }
+  on_clientDidDisconnect(client) {
+    if (client.type === 'app' && client.isInitialized) {
+      this.send({
+        command: 'didRemoveRuntimeClient',
+        id: client.id,
+        app: client.appInfo,
+      });
     }
+  }
 }
 
-module.exports = UxpCliClient;
+export default UxpCliClient;

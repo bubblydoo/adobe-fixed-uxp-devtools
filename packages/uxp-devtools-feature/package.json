@@ -1,25 +1,32 @@
 {
-    "name": "@adobe-fixed-uxp/uxp-devtools-feature",
-    "version": "1.5.0",
-    "description": "UXP Devtools Feature Config Module",
-    "main": "src/index.js",
-    "scripts": {
-      "test": "echo \"Error: no test specified\" && exit 1"
+  "name": "@adobe-fixed-uxp/uxp-devtools-feature",
+  "type": "module",
+  "version": "1.5.0",
+  "description": "UXP Devtools Feature Config Module",
+  "author": "Adobe Inc",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:adobe-uxp/devtools-cli.git",
+    "directory": "packages/uxp-devtools-feature"
+  },
+  "keywords": [
+    "adobe",
+    "uxp",
+    "devtools",
+    "plugin",
+    "core"
+  ],
+  "exports": {
+    ".": {
+      "import": "./src/index.js"
     },
-    "repository": {
-      "type": "git",
-      "url": "git@github.com:adobe-uxp/devtools-cli.git",
-      "directory": "packages/uxp-devtools-feature"
-    },
-    "keywords": [
-      "adobe",
-      "uxp",
-      "devtools",
-      "plugin",
-      "core"
-    ],
-    "author": "Adobe Inc",
-    "license": "Apache-2.0",
-    "dependencies": {
-    }
+    "./package.json": "./package.json"
+  },
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+  }
 }

@@ -1,4 +1,3 @@
-/* eslint-disable class-methods-use-this */
 /*
  *  Copyright 2020 Adobe Systems Incorporated. All rights reserved.
  *  This file is licensed to you under the Apache License, Version 2.0 (the "License");
@@ -13,29 +12,29 @@
  */
 
 class UxpDevtoolsInitializerParams {
-    set servicePort(port) {
-        this._servicePort = port;
-    }
+  set servicePort(port) {
+    this._servicePort = port;
+  }
 
-    get servicePort() {
-        return this._servicePort;
-    }
+  get servicePort() {
+    return this._servicePort;
+  }
 
-    set logger(logg) {
-        this._logger = logg;
-    }
+  set logger(logg) {
+    this._logger = logg;
+  }
 
-    get logger() {
-        return this._logger;
-    }
+  get logger() {
+    return this._logger;
+  }
 
-    set hostDelegate(delegate) {
-        this._hostDelegate = delegate;
-    }
+  set hostDelegate(delegate) {
+    this._hostDelegate = delegate;
+  }
 
-    get hostDelegate() {
-        return this._hostDelegate;
-    }
+  get hostDelegate() {
+    return this._hostDelegate;
+  }
 }
 
-module.exports = UxpDevtoolsInitializerParams;
+export default UxpDevtoolsInitializerParams;

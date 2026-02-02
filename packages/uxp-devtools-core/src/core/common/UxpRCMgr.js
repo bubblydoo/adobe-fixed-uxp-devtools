@@ -11,72 +11,72 @@
  *
  */
 
-const path = require("path");
-const fs = require("fs");
+import fs from 'node:fs';
+import path from 'node:path';
 
 // Manages the .uxprc resource config file - which stores details of the curent plugin session
 // in a persistent way.
 class UxpRCMgr {
-    constructor() {
-        this.uxprcPath = path.resolve(".uxprc");
+  constructor() {
+    this.uxprcPath = path.resolve('.uxprc');
+  }
+
+  _readRc() {
+    let contents = '{}';
+    if (fs.existsSync(this.uxprcPath)) {
+      contents = fs.readFileSync(this.uxprcPath, 'utf8');
+    }
+    return JSON.parse(contents);
+  }
+
+  _writeToRc(rcObj) {
+    fs.writeFileSync(this.uxprcPath, JSON.stringify(rcObj, null, 4), 'utf8');
+  }
+
+  setUxprcPath(uxprcDirPath) {
+    this.uxprcPath = path.join(uxprcDirPath, '.uxprc');
+  }
+
+  _readEntry(key) {
+    const rc = this._readRc();
+    return rc[key];
+  }
+
+  _writeEntry(key, data) {
+    const rc = this._readRc();
+    rc[key] = data;
+    this._writeToRc(rc);
+  }
+
+  readConfig() {
+    return this._readEntry('config');
+  }
+
+  commitConfig(config) {
+    this._writeEntry('config', config);
+  }
+
+  readPluginSession() {
+    return this._readEntry('plugin');
+  }
+
+  writePluginSession(sessions, pluginInfo) {
+    const plugin = this._readEntry('plugin') || {};
+    plugin.sessions = plugin.sessions || [];
+    plugin.info = pluginInfo || {};
+
+    for (const session of sessions) {
+      const index = plugin.sessions.findIndex(obj => (obj.app.id === session.app.id && obj.app.version === session.app.version));
+      if (index >= 0) {
+        plugin.sessions[index] = session;
+      }
+      else {
+        plugin.sessions.push(session);
+      }
     }
 
-    _readRc() {
-        let contents = "{}";
-        if (fs.existsSync(this.uxprcPath)) {
-            contents = fs.readFileSync(this.uxprcPath, "utf8");
-        }
-        return JSON.parse(contents);
-    }
-
-    _writeToRc(rcObj) {
-        fs.writeFileSync(this.uxprcPath, JSON.stringify(rcObj, null, 4), "utf8");
-    }
-
-    setUxprcPath(uxprcDirPath) {
-        this.uxprcPath = path.join(uxprcDirPath, ".uxprc");
-    }
-
-    _readEntry(key) {
-        const rc = this._readRc();
-        return rc[key];
-    }
-
-    _writeEntry(key, data) {
-        const rc = this._readRc();
-        rc[key] = data;
-        this._writeToRc(rc);
-    }
-
-    readConfig() {
-        return this._readEntry("config");
-    }
-
-    commitConfig(config) {
-        this._writeEntry("config", config);
-    }
-
-    readPluginSession() {
-        return this._readEntry("plugin");
-    }
-
-    writePluginSession(sessions, pluginInfo) {
-        const plugin = this._readEntry("plugin") || {};
-        plugin.sessions = plugin.sessions || [];
-        plugin.info = pluginInfo || {};
-
-        for (let session of sessions) {
-            const index = plugin.sessions.findIndex(obj => (obj.app.id === session.app.id && obj.app.version === session.app.version));
-            if (index >= 0) {
-                plugin.sessions[index] = session;
-            }
-            else {
-                plugin.sessions.push(session);
-            }
-        }
-
-        this._writeEntry("plugin", plugin);
-    }
+    this._writeEntry('plugin', plugin);
+  }
 }
 
-module.exports = new UxpRCMgr();
+export default new UxpRCMgr();
