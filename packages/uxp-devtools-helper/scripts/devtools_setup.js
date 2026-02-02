@@ -14,7 +14,7 @@ import os from 'node:os';
 import path from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
-import tar from 'tar';
+import * as tar from 'tar';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

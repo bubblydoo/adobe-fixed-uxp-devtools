@@ -42,7 +42,8 @@
   "main": "src/DevToolsHelper.ts",
   "scripts": {
     "build": "tsc",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "postinstall": "node scripts/devtools_setup.js"
   },
   "dependencies": {
     "@adobe-fixed-uxp/uxp-devtools-feature": "workspace:*",
