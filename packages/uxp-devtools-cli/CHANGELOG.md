@@ -1,5 +1,12 @@
 # @adobe-fixed-uxp/uxp-devtools-cli
 
+## 1.6.3
+
+### Patch Changes
+
+- Updated dependencies [8eee2e0]
+  - @adobe-fixed-uxp/uxp-devtools-core@1.6.3
+
 ## 1.6.2
 
 ### Patch Changes

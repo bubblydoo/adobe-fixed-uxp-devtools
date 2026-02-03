@@ -1,7 +1,7 @@
 {
   "name": "@adobe-fixed-uxp/uxp-devtools-cli",
   "type": "module",
-  "version": "1.6.2",
+  "version": "1.6.3",
   "description": "Command line interface for rapid UXP plugin development",
   "author": "Adobe Inc",
   "license": "Apache-2.0",
