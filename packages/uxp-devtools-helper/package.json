@@ -1,7 +1,7 @@
 {
   "name": "@adobe-fixed-uxp/uxp-devtools-helper",
   "type": "module",
-  "version": "1.6.1",
+  "version": "1.6.2",
   "description": "Adobe Devtools helper package used by uxp cli",
   "author": "Adobe Inc",
   "license": "Apache-2.0",
