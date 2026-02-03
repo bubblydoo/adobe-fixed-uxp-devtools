@@ -46,7 +46,6 @@
     "postinstall": "node scripts/devtools_setup.js"
   },
   "dependencies": {
-    "@adobe-fixed-uxp/uxp-devtools-feature": "workspace:*",
     "node-gyp-build": "^4.2.3",
     "tar": "^7.4.3"
   },

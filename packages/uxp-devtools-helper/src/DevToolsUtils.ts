@@ -16,12 +16,11 @@ import { exec } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { FeatureFlag } from '@adobe-fixed-uxp/uxp-devtools-feature';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const isInternalBuild = FeatureFlag.isFeatureEnabled('internalPluginWorkspace');
+const isInternalBuild = false;
 
 interface UxpDeveloperConfigPath {
   baseFolder: string;

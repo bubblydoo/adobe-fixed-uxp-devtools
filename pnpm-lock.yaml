@@ -118,17 +118,8 @@ importers:
         specifier: ^8.5.14
         version: 8.18.1
 
-  packages/uxp-devtools-feature:
-    devDependencies:
-      '@adobe-fixed-uxp/tsconfig':
-        specifier: workspace:*
-        version: link:../tsconfig
-
   packages/uxp-devtools-helper:
     dependencies:
-      '@adobe-fixed-uxp/uxp-devtools-feature':
-        specifier: workspace:*
-        version: link:../uxp-devtools-feature
       node-gyp-build:
         specifier: ^4.2.3
         version: 4.8.4
