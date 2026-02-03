@@ -1,5 +1,11 @@
 # @adobe-fixed-uxp/uxp-devtools-core
 
+## 1.6.3
+
+### Patch Changes
+
+- 8eee2e0: Better message type discrimination
+
 ## 1.6.2
 
 ### Patch Changes
