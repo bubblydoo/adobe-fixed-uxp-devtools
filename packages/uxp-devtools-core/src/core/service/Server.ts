@@ -295,6 +295,36 @@ class Server extends EventEmitter {
   get localServerUrl(): string {
     return `http://${this.localHostname}`;
   }
+
+  /**
+   * Gracefully closes the server, disconnecting all clients and stopping the HTTP/WebSocket servers.
+   * @returns A promise that resolves when the server has fully closed.
+   */
+  close(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      // Close all connected WebSocket clients
+      for (const client of this._io.clients) {
+        client.close(1000, 'Server shutting down');
+      }
+
+      // Close the WebSocket server
+      this._io.close();
+
+      this._httpServer.closeAllConnections();
+
+      // Close the HTTP server
+      this._httpServer.close((err) => {
+        if (err) {
+          reject(err);
+        }
+        else {
+          this._clientsById.clear();
+          this._v8DebuggerClients.clear();
+          resolve();
+        }
+      });
+    });
+  }
 }
 
 export default Server;
