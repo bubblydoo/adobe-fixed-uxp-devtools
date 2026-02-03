@@ -1,5 +1,11 @@
 # @adobe-fixed-uxp/uxp-devtools-helper
 
+## 1.6.2
+
+### Patch Changes
+
+- d825dfe: Removed feature package, add close function to server
+
 ## 1.6.1
 
 ### Patch Changes
