@@ -18,9 +18,25 @@ export interface ProxyMessage extends BaseMessage {
   message: BaseMessage;
 }
 
-export interface PluginMessage extends BaseMessage {
+interface PluginMessageBase extends BaseMessage {
   command: 'Plugin';
-  action: 'load' | 'unload' | 'reload' | 'debug' | 'list' | 'validate' | 'cdtConnected' | 'cdtDisconnected' | 'discover';
+}
+
+export interface PluginProviderParams {
+  provider: {
+    type: string;
+    id: string;
+    path: string;
+  };
+}
+
+/**
+ * Flexible plugin message type for internal mutable operations.
+ * Use the discriminated union `PluginMessage` for type-safe external APIs.
+ */
+export interface PluginMessageAny extends BaseMessage {
+  command: 'Plugin';
+  action: PluginMessage['action'];
   pluginSessionId?: string;
   breakOnStart?: boolean;
   params?: {
@@ -31,15 +47,81 @@ export interface PluginMessage extends BaseMessage {
     };
     [key: string]: unknown;
   };
+  manifest?: unknown;
 }
 
-export interface UXPMessage extends BaseMessage {
-  command: 'UXP';
-  action: 'unloaded' | 'log';
-  pluginSessionId?: string;
-  level?: string;
-  message?: string;
+export interface PluginLoadMessage extends PluginMessageBase {
+  action: 'load';
+  params: PluginProviderParams;
+  breakOnStart?: boolean;
 }
+
+export interface PluginUnloadMessage extends PluginMessageBase {
+  action: 'unload';
+  pluginSessionId: string;
+}
+
+export interface PluginReloadMessage extends PluginMessageBase {
+  action: 'reload';
+  pluginSessionId: string;
+}
+
+export interface PluginDebugMessage extends PluginMessageBase {
+  action: 'debug';
+  pluginSessionId: string;
+}
+
+export interface PluginListMessage extends PluginMessageBase {
+  action: 'list';
+}
+
+export interface PluginValidateMessage extends PluginMessageBase {
+  action: 'validate';
+  params: PluginProviderParams;
+  manifest: unknown;
+}
+
+export interface PluginCdtConnectedMessage extends PluginMessageBase {
+  action: 'cdtConnected';
+  pluginSessionId: string;
+}
+
+export interface PluginCdtDisconnectedMessage extends PluginMessageBase {
+  action: 'cdtDisconnected';
+  pluginSessionId: string;
+}
+
+export interface PluginDiscoverMessage extends PluginMessageBase {
+  action: 'discover';
+}
+
+export type PluginMessage =
+  | PluginLoadMessage
+  | PluginUnloadMessage
+  | PluginReloadMessage
+  | PluginDebugMessage
+  | PluginListMessage
+  | PluginValidateMessage
+  | PluginCdtConnectedMessage
+  | PluginCdtDisconnectedMessage
+  | PluginDiscoverMessage;
+
+interface UXPMessageBase extends BaseMessage {
+  command: 'UXP';
+}
+
+export interface UXPUnloadedMessage extends UXPMessageBase {
+  action: 'unloaded';
+  pluginSessionId: string;
+}
+
+export interface UXPLogMessage extends UXPMessageBase {
+  action: 'log';
+  level: string;
+  message: string;
+}
+
+export type UXPMessage = UXPUnloadedMessage | UXPLogMessage;
 
 export interface CDTMessage extends BaseMessage {
   command: 'CDT';
@@ -47,11 +129,27 @@ export interface CDTMessage extends BaseMessage {
   cdtMessage?: string;
 }
 
-export interface CDTBrowserMessage extends BaseMessage {
+interface CDTBrowserMessageBase extends BaseMessage {
   command: 'CDTBrowser';
-  action: 'cdtMessage' | 'cdtConnected' | 'cdtDisconnected';
-  cdtMessage?: string;
 }
+
+export interface CDTBrowserCdtMessage extends CDTBrowserMessageBase {
+  action: 'cdtMessage';
+  cdtMessage: string;
+}
+
+export interface CDTBrowserConnectedMessage extends CDTBrowserMessageBase {
+  action: 'cdtConnected';
+}
+
+export interface CDTBrowserDisconnectedMessage extends CDTBrowserMessageBase {
+  action: 'cdtDisconnected';
+}
+
+export type CDTBrowserMessage =
+  | CDTBrowserCdtMessage
+  | CDTBrowserConnectedMessage
+  | CDTBrowserDisconnectedMessage;
 
 export interface AppInfoMessage extends BaseMessage {
   command: 'App';

@@ -18,6 +18,7 @@ import type {
   CDTBrowserMessage,
   CDTMessage,
   PluginMessage,
+  PluginMessageAny,
   RequestCallback,
   UXPMessage,
 } from '../../../types/index.js';
@@ -45,21 +46,6 @@ interface PluginDetails {
   appInfo: AppInfo;
   getCDTClient: () => CDTClientInterface | null;
   setCDTClient: (client: CDTClientInterface | null) => void;
-}
-
-// Plugin provider params
-interface PluginProviderParams {
-  type?: string;
-  id?: string;
-  path?: string;
-}
-
-// Extended message types for this class
-interface PluginMessageWithParams extends PluginMessage {
-  params?: {
-    provider?: PluginProviderParams;
-    [key: string]: unknown;
-  };
 }
 
 interface PluginReplyMessage extends BaseMessage {
@@ -120,7 +106,7 @@ class AppSandboxHelper {
     }
   }
 
-  createMessageWithSandboxStoragePath(message: PluginMessageWithParams): PluginMessageWithParams {
+  createMessageWithSandboxStoragePath(message: PluginMessageAny): PluginMessageAny {
     const { params } = message;
     if (!(params && params.provider && params.provider.path)) {
       return message;
@@ -202,16 +188,6 @@ class AppClient extends Client {
     this._server.broadcastEvent('didPluginUnloaded', plugin);
   }
 
-  private _handleHostAppLog(msg: UXPMessage): void {
-    const { level, message } = msg;
-    if (!(level && message && this.appInfo)) {
-      return;
-    }
-    const { appId, appName, appVersion, uxpVersion } = this.appInfo;
-    const data = { level, message, appInfo: { appId, appName, appVersion, uxpVersion } };
-    this._server.broadcastEvent('hostAppLog', data);
-  }
-
   msg_UXP(message: UXPMessage): void {
     if (message.action === 'unloaded') {
       const plugin = this._getPluginForMessage(message);
@@ -221,13 +197,19 @@ class AppClient extends Client {
       this._handlePluginUnloadCommon(plugin);
     }
     else if (message.action === 'log') {
-      this._handleHostAppLog(message);
+      const { level, message: logMessage } = message;
+      if (!(level && logMessage && this.appInfo)) {
+        return;
+      }
+      const { appId, appName, appVersion, uxpVersion } = this.appInfo;
+      const data = { level, message: logMessage, appInfo: { appId, appName, appVersion, uxpVersion } };
+      this._server.broadcastEvent('hostAppLog', data);
     }
   }
 
   msg_CDTBrowser(message: CDTBrowserMessage): void {
-    if (this._browserCDTClient) {
-      this._browserCDTClient.sendRaw(message.cdtMessage || '');
+    if (message.action === 'cdtMessage' && this._browserCDTClient) {
+      this._browserCDTClient.sendRaw(message.cdtMessage);
     }
   }
 
@@ -267,7 +249,7 @@ class AppClient extends Client {
     });
   }
 
-  private _createMessageWithPluginSession(message: PluginMessageWithParams, callback: RequestCallback): PluginMessageWithParams | null {
+  private _createMessageWithPluginSession(message: PluginMessageAny, callback: RequestCallback): PluginMessageAny | null {
     const clientSessionId = message.pluginSessionId;
     if (!clientSessionId) {
       const reply: BaseMessage = {
@@ -292,7 +274,7 @@ class AppClient extends Client {
     return message;
   }
 
-  private _handlePluginDebugRequest(message: PluginMessageWithParams, callback: RequestCallback): void {
+  private _handlePluginDebugRequest(message: PluginMessageAny, callback: RequestCallback): void {
     const clientSessionId = message.pluginSessionId;
     const msgWithSession = this._createMessageWithPluginSession(message, callback);
     if (!msgWithSession) {
@@ -391,7 +373,7 @@ class AppClient extends Client {
     });
   }
 
-  private _handlePluginLoadRequest(loadMessage: PluginMessageWithParams, callback: RequestCallback, existingClientSessionId: string | null = null): void {
+  private _handlePluginLoadRequest(loadMessage: PluginMessageAny, callback: RequestCallback, existingClientSessionId: string | null = null): void {
     const prom = this._fetchPluginsBaseFolderPaths();
     prom.then((installedPaths) => {
       this._verifyAndLoad(loadMessage, installedPaths, callback, existingClientSessionId);
@@ -415,7 +397,7 @@ class AppClient extends Client {
     return plugin as PluginDetails | null;
   }
 
-  private _isLoadedFromProductionFolder(message: PluginMessageWithParams, baseFolderPaths: string[]): boolean {
+  private _isLoadedFromProductionFolder(message: PluginMessageAny, baseFolderPaths: string[]): boolean {
     if (!Array.isArray(baseFolderPaths) || baseFolderPaths.length === 0) {
       return false;
     }
@@ -430,7 +412,7 @@ class AppClient extends Client {
     return !!isProductionPlugin;
   }
 
-  private _verifyAndLoad(message: PluginMessageWithParams, baseFolderPaths: string[], callback: RequestCallback, existingClientSessionId: string | null): void {
+  private _verifyAndLoad(message: PluginMessageAny, baseFolderPaths: string[], callback: RequestCallback, existingClientSessionId: string | null): void {
     if (this._isLoadedFromProductionFolder(message, baseFolderPaths)) {
       const reply: BaseMessage = {
         error: 'Failed to load plugin as loading and debugging of installed plugins is prohibited.',
@@ -470,7 +452,7 @@ class AppClient extends Client {
     this.handleRequestTimeout('load', requestId, LOAD_TIMEOUT);
   }
 
-  private _handlePluginValidateRequest(message: PluginMessageWithParams, callback: RequestCallback): void {
+  private _handlePluginValidateRequest(message: PluginMessageAny, callback: RequestCallback): void {
     let updatedMessage = message;
     if (this.appInfo && this.appInfo.sandbox) {
       const sandboxHelperInstance = this._ensureAppSandboxHelper();
@@ -483,8 +465,8 @@ class AppClient extends Client {
     this.sendRequest(updatedMessage, callback);
   }
 
-  private _createLoadRequestForReloadRequest(plugin: PluginDetails): PluginMessageWithParams {
-    const loadMessage: PluginMessageWithParams = {
+  private _createLoadRequestForReloadRequest(plugin: PluginDetails): PluginMessageAny {
+    const loadMessage: PluginMessageAny = {
       command: 'Plugin',
       action: 'load',
       params: {
@@ -499,7 +481,7 @@ class AppClient extends Client {
     return loadMessage;
   }
 
-  private _handlePluginReloadRequest(message: PluginMessageWithParams, callback: RequestCallback): void {
+  private _handlePluginReloadRequest(message: PluginMessageAny, callback: RequestCallback): void {
     const plugin = this._server.pluginSessionMgr.getPluginFromSessionId(message.pluginSessionId || '') as PluginDetails | null;
     if (!plugin) {
       const reply: BaseMessage = {
@@ -534,7 +516,7 @@ class AppClient extends Client {
     }
   }
 
-  private _handlePluginUnloadRequest(message: PluginMessageWithParams, callback: RequestCallback): void {
+  private _handlePluginUnloadRequest(message: PluginMessageAny, callback: RequestCallback): void {
     const msgWithSession = this._createMessageWithPluginSession(message, callback);
     if (!msgWithSession) {
       return;
@@ -558,7 +540,7 @@ class AppClient extends Client {
 
   handler_Plugin(message: PluginMessage, callback: RequestCallback): void {
     const { action } = message;
-    const pluginMessage = message as PluginMessageWithParams;
+    const pluginMessage = message as PluginMessageAny;
     if (action === 'load') {
       this._handlePluginLoadRequest(pluginMessage, callback);
     }
