@@ -51,13 +51,16 @@ interface _NetworkInterface {
   address: string;
 }
 
-class Server extends EventEmitter {
+interface ServerEventMap {
+  socketConnection: [socket: WebSocket, req: http.IncomingMessage];
+  serverReady: [];
+}
+
+class Server extends EventEmitter<ServerEventMap> {
   private _port: number;
   private _pluginSessionMgr: PluginSessionMgr;
   private _featureConfigMgr: FeatureConfigMgr;
   private _clientsById: Map<number, Client>;
-  private _v8DebuggerClients: Map<string, unknown>;
-  private _v8BreakOnStart: boolean;
   private _app: Application;
   private _httpServer: http.Server;
   private _io: WebSocketServer;
@@ -70,8 +73,6 @@ class Server extends EventEmitter {
     this._featureConfigMgr = FeatureConfigMgr.instance();
 
     this._clientsById = new Map();
-    this._v8DebuggerClients = new Map();
-    this._v8BreakOnStart = false;
 
     this._app = express();
     this._httpServer = http.createServer(this._app);
@@ -83,8 +84,6 @@ class Server extends EventEmitter {
     // Create the WebSocket.
     this._io = new WebSocketServer({ server: this._httpServer });
     this._io.on('connection', this._handleSocketConnection.bind(this));
-
-    console.log('LISTENING');
 
     // Make sure to listen for error messages on _io to avoid crashes when some error
     // is dispatched and we don't have a listener.
@@ -105,7 +104,6 @@ class Server extends EventEmitter {
   }
 
   private _getClientClassForUrl(url: string): ClientConstructor {
-    console.log('HI', url);
     if (url === '/socket/cli') {
       return UxpCliClient as unknown as ClientConstructor;
     }
@@ -119,7 +117,8 @@ class Server extends EventEmitter {
   }
 
   private _handleSocketConnection(socket: WebSocket, req: http.IncomingMessage): void {
-    console.log('SOCKET');
+    this.emit('socketConnection', socket, req);
+
     // WS changed the way it sends the initial upgrade request.
     // Newer versions pass it dirrectly to the connection event handler.
     const url = req ? req.url! : (socket as unknown as { upgradeReq: { url: string } }).upgradeReq.url;
@@ -319,7 +318,6 @@ class Server extends EventEmitter {
         }
         else {
           this._clientsById.clear();
-          this._v8DebuggerClients.clear();
           resolve();
         }
       });
