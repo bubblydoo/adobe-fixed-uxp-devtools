@@ -44,8 +44,7 @@ interface PluginDetails {
   pluginPath: string;
   hostPlugInSessionId: string;
   appInfo: AppInfo;
-  getCDTClient: () => CDTClientInterface | null;
-  setCDTClient: (client: CDTClientInterface | null) => void;
+  getCDTClients: () => Set<CDTClientInterface>;
 }
 
 interface PluginReplyMessage extends BaseMessage {
@@ -168,19 +167,19 @@ class AppClient extends Client {
     return this._server.pluginSessionMgr.getPluginFromHostSessionId(pluginSessionId) as PluginDetails | null;
   }
 
-  private _getCDTClientForMessage(message: BaseMessage & { pluginSessionId?: string }): CDTClientInterface | null {
+  private _getCDTClientsForMessage(message: BaseMessage & { pluginSessionId?: string }): Set<CDTClientInterface> | null {
     const plugin = this._getPluginForMessage(message);
     if (!plugin) {
       return null;
     }
-    return plugin.getCDTClient();
+    return plugin.getCDTClients();
   }
 
   private _handlePluginUnloadCommon(plugin: PluginDetails): void {
     // this plugin was unloaded at the uxp side -
-    // so, end the debugging session with Inspect, if any.
-    const cdtClient = plugin.getCDTClient();
-    if (cdtClient) {
+    // so, end the debugging session with all connected CDT clients.
+    const cdtClients = plugin.getCDTClients();
+    for (const cdtClient of cdtClients) {
       cdtClient.handleHostPluginUnloaded();
     }
     // remove this plugin from session manager.
@@ -214,12 +213,16 @@ class AppClient extends Client {
   }
 
   msg_CDT(message: CDTMessage): void {
-    const cdtClient = this._getCDTClientForMessage(message);
-    if (!cdtClient) {
+    const cdtClients = this._getCDTClientsForMessage(message);
+    if (!cdtClients || cdtClients.size === 0) {
       return;
     }
     if (message.cdtMessage) {
-      cdtClient.sendRaw(message.cdtMessage);
+      // Broadcast CDP messages (responses + events) to ALL connected CDT clients.
+      // Each client's CDP library ignores responses to request IDs it didn't send.
+      for (const cdtClient of cdtClients) {
+        cdtClient.sendRaw(message.cdtMessage);
+      }
     }
   }
 

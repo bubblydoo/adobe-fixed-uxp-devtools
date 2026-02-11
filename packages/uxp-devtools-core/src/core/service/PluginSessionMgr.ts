@@ -29,7 +29,7 @@ class PluginDetails {
   public appInfo: AppInfo;
   public pluginPath: string;
   public pluginId: string;
-  public cdtClient?: CDTClient;
+  public cdtClients: Set<CDTClient> = new Set();
 
   constructor(pluginId: string, pluginPath: string, hostPlugInSessionId: string, appInfo: AppInfo) {
     this.hostPlugInSessionId = hostPlugInSessionId;
@@ -38,12 +38,16 @@ class PluginDetails {
     this.pluginId = pluginId;
   }
 
-  setCDTClient(cdtClient: CDTClient): void {
-    this.cdtClient = cdtClient;
+  addCDTClient(cdtClient: CDTClient): void {
+    this.cdtClients.add(cdtClient);
   }
 
-  getCDTClient(): CDTClient | undefined {
-    return this.cdtClient;
+  removeCDTClient(cdtClient: CDTClient): void {
+    this.cdtClients.delete(cdtClient);
+  }
+
+  getCDTClients(): Set<CDTClient> {
+    return this.cdtClients;
   }
 }
 

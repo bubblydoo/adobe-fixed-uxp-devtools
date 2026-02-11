@@ -14,3 +14,4 @@ scripts/adobe_internal/npmrcUtil.js
 .turbo/
 *.tsbuildinfo
 *.log
+*.tgz

@@ -21,8 +21,9 @@ interface PluginDetails {
   pluginId: string;
   pluginPath: string;
   hostPlugInSessionId: string;
-  getCDTClient: () => CDTClient | null;
-  setCDTClient: (client: CDTClient | null) => void;
+  getCDTClients: () => Set<CDTClient>;
+  addCDTClient: (client: CDTClient) => void;
+  removeCDTClient: (client: CDTClient) => void;
 }
 
 // Client interface for event handling
@@ -53,9 +54,15 @@ class CDTClient extends Client {
       return;
     }
     this._plugin = pluginDetails;
-    this._plugin.setCDTClient(this);
+    // Only notify Photoshop of a CDT connection for the first client.
+    // Subsequent clients (e.g. Chrome DevTools opened alongside vitest) share
+    // the same debugging session without re-triggering cdtConnected.
+    const isFirstClient = this._plugin.getCDTClients().size === 0;
+    this._plugin.addCDTClient(this);
     this.handlesRawMessages = true;
-    this._appClient.handlePluginCDTConnected(this._plugin.hostPlugInSessionId);
+    if (isFirstClient) {
+      this._appClient.handlePluginCDTConnected(this._plugin.hostPlugInSessionId);
+    }
   }
 
   protected override handleClientRawMessage(rawCDTMessage: string): void {
@@ -81,7 +88,7 @@ class CDTClient extends Client {
 
   handleHostPluginUnloaded(): void {
     if (this._plugin) {
-      this._plugin.setCDTClient(null);
+      this._plugin.removeCDTClient(this);
     }
     this._appClient = null;
     this._plugin = null;
@@ -92,10 +99,14 @@ class CDTClient extends Client {
   }
 
   override handleDisconnect(): void {
-    if (!this._appClient) {
+    if (!this._appClient || !this._plugin) {
       return;
     }
-    this._appClient.handlePluginCDTDisconnected(this._plugin!.hostPlugInSessionId);
+    this._plugin.removeCDTClient(this);
+    // Only notify Photoshop when the last CDT client disconnects.
+    if (this._plugin.getCDTClients().size === 0) {
+      this._appClient.handlePluginCDTDisconnected(this._plugin.hostPlugInSessionId);
+    }
   }
 }
 
