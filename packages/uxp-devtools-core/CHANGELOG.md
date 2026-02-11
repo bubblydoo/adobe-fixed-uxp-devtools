@@ -1,5 +1,11 @@
 # @adobe-fixed-uxp/uxp-devtools-core
 
+## 1.6.5
+
+### Patch Changes
+
+- 515eb14: Add socketConnection event, remove logs
+
 ## 1.6.4
 
 ### Patch Changes
