@@ -1,5 +1,11 @@
 # @adobe-fixed-uxp/uxp-devtools-core
 
+## 1.6.4
+
+### Patch Changes
+
+- 49e5d45: Make multiple cdt clients possible
+
 ## 1.6.3
 
 ### Patch Changes
