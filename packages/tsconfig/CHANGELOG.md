@@ -1,5 +1,11 @@
 # @adobe-fixed-uxp/tsconfig
 
+## 1.1.2
+
+### Patch Changes
+
+- cdaa1d0: Republish to get rid of logs
+
 ## 1.1.1
 
 ### Patch Changes

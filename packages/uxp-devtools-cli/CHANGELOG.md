@@ -1,5 +1,13 @@
 # @adobe-fixed-uxp/uxp-devtools-cli
 
+## 1.6.6
+
+### Patch Changes
+
+- cdaa1d0: Republish to get rid of logs
+- Updated dependencies [cdaa1d0]
+  - @adobe-fixed-uxp/uxp-devtools-core@1.6.6
+
 ## 1.6.5
 
 ### Patch Changes

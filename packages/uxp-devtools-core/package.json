@@ -1,7 +1,7 @@
 {
   "name": "@adobe-fixed-uxp/uxp-devtools-core",
   "type": "module",
-  "version": "1.6.5",
+  "version": "1.6.6",
   "description": "UXP Devtools Core Module",
   "author": "Adobe Inc",
   "license": "Apache-2.0",
