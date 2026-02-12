@@ -1,5 +1,11 @@
 # @adobe-fixed-uxp/uxp-devtools-helper
 
+## 1.6.3
+
+### Patch Changes
+
+- cdaa1d0: Republish to get rid of logs
+
 ## 1.6.2
 
 ### Patch Changes
