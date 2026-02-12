@@ -53,6 +53,10 @@ interface ConnectionError extends Error {
   code?: string;
 }
 
+function isErrorConnectionError(err: unknown): err is ConnectionError {
+  return typeof err === 'object' && err !== null && 'code' in err;
+}
+
 export class CliClientController {
   public appClients: HostAppClient[];
   private _appConnectionListener: AppConnectionListener | null = null;
@@ -94,9 +98,9 @@ export class CliClientController {
     }
   }
 
-  onConnectionError(err: ConnectionError): void {
+  onConnectionError(err: unknown): void {
     if (this._callerPromise) {
-      if (err.code === 'ECONNREFUSED') {
+      if (isErrorConnectionError(err) && err.code === 'ECONNREFUSED') {
         const errorMsg = 'uxp cli service is not running. Start the cli service and try again.';
         this._callerPromise.reject(new Error(errorMsg));
       }
@@ -104,9 +108,12 @@ export class CliClientController {
         this._callerPromise.reject(err);
       }
     }
-    else {
+    else if (typeof err === 'object' && err !== null && 'message' in err) {
       // Log error even if there's no pending promise
       UxpLogger.error(`Connection error: ${err.message || String(err)}`);
+    }
+    else {
+      UxpLogger.error(`Connection error: ${String(err)}`);
     }
   }
 

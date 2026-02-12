@@ -60,12 +60,12 @@ export interface ClientInfo {
 
 type ConnectionHandler = (data: BaseMessage) => void;
 
+export type ConnectionErrorEvent = Parameters<NonNullable<WebSocket['onerror']>>[0];
 interface ConnectionEventMap {
   ready: [];
-  error: [Event];
+  error: [err: ConnectionErrorEvent];
   close: [];
 }
-
 class Connection extends EventEmitter<ConnectionEventMap> {
   private socket!: WebSocket;
   private _nextRequestId: number = 0;
@@ -106,7 +106,7 @@ class Connection extends EventEmitter<ConnectionEventMap> {
     // Connection opened
   }
 
-  onError(evt: Event): void {
+  onError(evt: ConnectionErrorEvent): void {
     console.error(evt);
     UxpLogger.error(`Websocket error ${evt.type}`);
     this.emit('error', evt);
