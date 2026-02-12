@@ -39,7 +39,13 @@ interface Server {
 
 let lastId = 0;
 
-class Client extends EventEmitter {
+interface ClientEventMap {
+  message: [message: Buffer | string];
+  disconnect: [];
+  connect: [];
+}
+
+class Client extends EventEmitter<ClientEventMap> {
   protected _id: number;
   protected _server: Server;
   protected _socket: WebSocket | null;

@@ -60,7 +60,13 @@ export interface ClientInfo {
 
 type ConnectionHandler = (data: BaseMessage) => void;
 
-class Connection extends EventEmitter {
+interface ConnectionEventMap {
+  ready: [];
+  error: [Event];
+  close: [];
+}
+
+class Connection extends EventEmitter<ConnectionEventMap> {
   private socket!: WebSocket;
   private _nextRequestId: number = 0;
   private _callbacks: Map<number, RequestCallback> = new Map();
