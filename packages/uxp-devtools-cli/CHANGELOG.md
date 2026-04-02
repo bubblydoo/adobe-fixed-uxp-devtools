@@ -1,5 +1,11 @@
 # @adobe-fixed-uxp/uxp-devtools-cli
 
+## 1.6.7
+
+### Patch Changes
+
+- ee8f44b: Fix yargs awaiting issue
+
 ## 1.6.6
 
 ### Patch Changes
