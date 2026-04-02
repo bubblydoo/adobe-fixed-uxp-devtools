@@ -36,7 +36,7 @@ class Tool {
     this._commands = modules;
   }
 
-  run(args: string[]): void {
+  async run(args: string[]): Promise<void> {
     // Make sure we don't accept paramaters that are not defined.
     const yargsInstance = yargs(args);
     yargsInstance.strict(true);
@@ -90,7 +90,7 @@ class Tool {
       yargsInstance.command(command);
     }
 
-    const params = yargsInstance.help().recommendCommands().argv as { _: string[] };
+    const params = await (yargsInstance.help().recommendCommands().argv);
     const cmds = params._;
     if (!cmds.length) {
       yargsInstance.showHelp();
